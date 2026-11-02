@@ -1,0 +1,14 @@
+{
+  "generators": {
+    "application": {
+      "factory": "./generator.mjs",
+      "schema": "./schema.json",
+      "description": "Generate a Go application in the Vx backend workspace"
+    },
+    "library": {
+      "factory": "./generator.mjs",
+      "schema": "./schema.json",
+      "description": "Generate a Go package in the Vx backend workspace"
+    }
+  }
+}

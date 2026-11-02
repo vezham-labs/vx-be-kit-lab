@@ -1,0 +1,47 @@
+# Tamizhi authentication and provider-account usage
+
+## Implemented app authentication
+
+Google, Microsoft, GitHub and enterprise SSO are supported as configured connections behind a single OIDC identity broker. Broker identities keep issuer/subject ownership stable across app and embed; the broker controls linking and enterprise/SAML federation. No provider button is advertised until it is configured.
+
+Use `config/tamizhi.sso.example.json` as the server configuration template. Register its `/api/tamizhi/auth/callback` URL with the broker, configure its upstream social/enterprise applications, set the client-secret environment variable and replace example domains. The frontend needs only the public API URL. OAuth secrets and sessions stay on the backend; static/prerendered clients require no SSR. A host app can instead supply its existing API bearer identity through the typed client headers.
+
+Login connections permit only server-configured `kc_idp_hint`, `connection`, `organization` or `domain_hint` parameters. They cannot override PKCE/state/nonce, scopes, client ID or callback. `returnTo` is stored in one-use OAuth state and validated again before redirect. Logout revokes the local cookie session, not the upstream SSO session. HTTPS deployments must enable secure cookies and use same-site frontend/API hosting.
+
+## AI-account authorization is separate
+
+Connecting an AI account should remove API-key entry **where the provider officially supports delegated model access**. It is not a universal transfer of free tokens or consumer subscription limits. Signing in to Tamizhi does not create a provider model connection. A separate Gemini OAuth consent flow is implemented alongside encrypted BYOK.
+
+| Provider            | Verified integration path                                                                                                                                                                                                           | Current Tamizhi status                                                                                                                                                                                                                                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| OpenAI / ChatGPT    | Official Sign in with ChatGPT can authorize eligible plan usage. Public open-source preview is for locally running tools; paid or remotely hosted apps must request access.                                                         | Hosted client registration/access is required before implementing and enabling plan-sharing login. No borrowed Codex client ID or consumer session credentials.                                                                                                                                                    |
+| Google Gemini       | Official Gemini OAuth supports user credentials with a configured Google Cloud project, enabled API and authorized scopes. Quota belongs to the applicable API project; Google identity alone does not establish free model access. | Implemented: consent/PKCE callback, explicit user quota-project selection, encrypted access/refresh tokens, serialized automatic refresh, model discovery, streaming images/tools and disconnect. Enable it with a Google web-client registration; live Google account verification still needs that registration. |
+| Anthropic / Claude  | The official Claude Code documentation directs third-party app inference to API keys or supported cloud providers and excludes offering Claude.ai subscription login in third-party apps.                                           | API-key integration. No Claude subscription-login button.                                                                                                                                                                                                                                                          |
+| DeepSeek, Kimi, xAI | Existing integration uses each provider's model API and user-supplied key.                                                                                                                                                          | Provider-account OAuth is not implemented or advertised. Any additional official delegated-access integration needs its own documented registration, scopes, refresh and quota behavior.                                                                                                                           |
+
+Gemini is the currently implemented provider-account OAuth adapter. Other provider-account integrations remain unavailable until their supported registration and API contracts are configured. User tokens and model credits must never be pooled between users. Account login should remain useful even when model-use permission is declined.
+
+## Official references checked
+
+- [OpenAI: Sign in with ChatGPT integration](https://developers.openai.com/cookbook/articles/sign-in-with-chatgpt) — includes the local open-source flow and hosted-app access requirement.
+- [Gemini: OAuth authentication](https://ai.google.dev/gemini-api/docs/oauth) — project, consent and API authorization prerequisites.
+- [Claude: authentication and credential use](https://code.claude.com/docs/en/legal-and-compliance) — supported third-party authentication boundaries.
+- [Keycloak server administration](https://www.keycloak.org/docs/latest/server_admin/) — identity brokering and configured provider hints.
+
+## Verification
+
+Backend build, race tests and vet passed. Tests cover signed identity verification, PKCE/state/nonce, one-use callbacks, allowlisted destinations, broker selection, forbidden authorization overrides, host-managed identity and session revocation. Six Chromium scenarios passed, including each of the four configured login choices, restored URLs and logout. Browser tests use local signed identity fixtures; they are not a claim that external production registrations have been configured. Docker, deployment and CI verification remain outside the requested scope.
+
+## Enable Gemini account connections
+
+Use `config/tamizhi.oauth.example.json` as a template, replacing its broker and API/frontend example domains. The optional `geminiOAuth` block requires your own **Google web application** client ID, server-only `TAMIZHI_GOOGLE_CLIENT_SECRET`, and registered callback `/api/tamizhi/providers/gemini/oauth/callback`. Omitting the block keeps the account-connect button hidden. No secret or token goes into the static frontend.
+
+Configure Google's OAuth consent screen and the documented Cloud Platform / Generative Language scopes. Add test users while the registration is in testing, and complete Google's consent verification requirements before general availability. In Tamizhi, sign in, open **Tuning → AI settings**, select Gemini, enter your authorized Google Cloud project ID, and choose **Connect Google account**. That project's Generative Language API must be enabled and its permissions/quota must allow your requests. This does not import a Google One/Gemini app subscription allowance.
+
+OAuth callbacks use a short-lived HttpOnly state cookie, encrypted owner-bound pending state and single-use PKCE verifier. Account switches during the flow, expired/forged callbacks and changed credential revisions are rejected. Tokens stay encrypted on the backend. Each model request retrieves the current grant and refreshes it when needed; concurrent requests serialize renewal. A disconnected or replaced grant cannot be restored by a late callback or refresh. Cancelled chats do not discard already-rotated refresh tokens.
+
+Disconnect removes local tokens and models immediately, cancels that user's active runs, and attempts Google's grant revocation. If Google is unreachable, local removal still completes and the backend logs a generic revocation warning; the user can also revoke Tamizhi in Google Account permissions. Replacing OAuth with an API key changes the local connection; use Google Account permissions to review any retained upstream grant.
+
+Model streaming uses Google's documented REST/SSE endpoint with SDK wire types, because the installed Go SDK requires an API key for its Gemini API initializer. Images, tool identity/thought signatures, usage and cancellation remain supported. OAuth quota/permission failures return an error; no API-key or operator-funded fallback is performed for an explicitly selected Gemini OAuth model.
+
+The upstream [DSH DeepSeek account provider](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/credentials/deepseek-account-platform/README.md) documents local/SSH-loopback browser login and excludes non-loopback reverse proxies. That implementation is not evidence of a supported hosted third-party Tamizhi account flow. CLI client identities and user session cookies are not reused to impersonate another app.

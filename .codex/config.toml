@@ -2,6 +2,10 @@
 command = "npx"
 args = [ "nx", "mcp", "--minimal" ]
 
+[mcp_servers.Neon]
+type = "http"
+url = "https://mcp.neon.tech/mcp?projectId=late-flower-50992894"
+
 [features]
 multi_agent = true
 

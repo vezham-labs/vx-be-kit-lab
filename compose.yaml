@@ -1,0 +1,18 @@
+services:
+  api:
+    build: .
+    ports: ['127.0.0.1:8080:8080']
+    volumes:
+      - ./config/tamizhi.json:/config/tamizhi.json:ro
+      - tamizhi-data:/data
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set the Neon Postgres connection URL}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?Set DEEPSEEK_API_KEY}
+      TAMIZHI_DEV_TOKEN: ${TAMIZHI_DEV_TOKEN:?Set a random token with at least 24 characters}
+    restart: unless-stopped
+    read_only: true
+    tmpfs: ['/tmp:size=32m']
+    security_opt: ['no-new-privileges:true']
+    cap_drop: ['ALL']
+volumes:
+  tamizhi-data:

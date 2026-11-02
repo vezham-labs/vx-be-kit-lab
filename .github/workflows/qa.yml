@@ -1,281 +1,40 @@
-# @vx/INFO: @vx/ci
-name: 🧪 QA
-
-run-name: >-
-  ${{
-    github.event_name == 'schedule' && '🧪 QA • 🕒 Scheduled' ||
-    github.event_name == 'workflow_dispatch' && '🧪 QA • ▶️ On demand' ||
-    ''
-  }}
-
+name: Workspace QA
 on:
-  schedule:
-    - cron: '30 22 * * 2,5' # every Wed, Sat at 04:00 AM IST
-  workflow_dispatch:
+  pull_request:
   push:
-    branches:
-      - timeline
-      - next**
-      - feat**
-      - fix**
-    # paths:
-    #   - '.github/workflows/qa.yml'
-    #   - 'vx/handbooks/ci.md'
-    #   - 'packages/**'
-
-concurrency:
-  group: qa-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-  # timeout-minutes: 10
-
+    branches: [timeline, 'feat**', 'fix**', 'next**']
+  workflow_dispatch:
 permissions:
-  checks: write # check runs
-  contents: write # commits, tags, pushes
-  pull-requests: write # PR comments
-
-env:
-  REPO: ${{ github.repository }}
-  BRANCH: ${{ github.ref_name }}
-  ACTOR: ${{ github.actor || 'vx/ci' }}
-  NX_NO_CLOUD: true
-  VX_NAME: '@vx/fe-kit'
-  VX_SKIP: '@vx/fe-kit'
-  HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-
+  contents: read
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  build:
+  checks:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: tamizhi
+          POSTGRES_PASSWORD: test-only-password
+          POSTGRES_DB: tamizhi
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      NX_NO_CLOUD: 'true'
+      TAMIZHI_TEST_POSTGRES_URL: postgres://tamizhi:test-only-password@localhost:5432/tamizhi?sslmode=disable
     steps:
-      - name: 🔵 · 🔎 Set short SHA
-        shell: bash
-        run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
-
-      - name: 🟠 · 🧰 Checkout • ${{ env.REPO }}@${{ env.SHORT_SHA }}
-        uses: vezham/vx-deployer/.github/actions/common/setup-checkout@timeline
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-          GIT_REPO: ${{ env.REPO }}
-          GIT_BRANCH: ${{ github.sha }}
-
-      - name: 🟠 · 🧩 Setup Node & pnpm
-        uses: vezham/vx-deployer/.github/actions/common/setup-install@timeline
-        with:
-          HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-
-      - name: 🔵 · 🏗️ Build
-        # id: build
-        # continue-on-error: false
-        shell: bash
-        run: |
-          pnpm nx run-many -t build || { echo "❌ Build failed"; exit 1; }
-
-      - name: 🟠 · ⛭ NX • Post Ops
-        if: always()
-        uses: vezham/vx-deployer/.github/actions/nx/post-ops@timeline
-
-  types:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 🔵 · 🔎 Set short SHA
-        shell: bash
-        run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
-
-      - name: 🟠 · 🧰 Checkout • ${{ env.REPO }}@${{ env.SHORT_SHA }}
-        uses: vezham/vx-deployer/.github/actions/common/setup-checkout@timeline
-        with:
-          GIT_REPO: ${{ env.REPO }}
-          GIT_BRANCH: ${{ github.sha }}
-
-      - name: 🟠 · 🧩 Setup Node & pnpm
-        uses: vezham/vx-deployer/.github/actions/common/setup-install@timeline
-        with:
-          HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-
-      - name: 🔵 · 🧠 Typecheck
-        shell: bash
-        run: |
-          pnpm nx run-many -t typecheck
-
-      - name: 🟠 · ⛭ NX • Post Ops
-        if: always()
-        uses: vezham/vx-deployer/.github/actions/nx/post-ops@timeline
-
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 🔵 · 🔎 Set short SHA
-        shell: bash
-        run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
-
-      - name: 🟠 · 🧰 Checkout • ${{ env.REPO }}@${{ env.SHORT_SHA }}
-        uses: vezham/vx-deployer/.github/actions/common/setup-checkout@timeline
-        with:
-          GIT_REPO: ${{ env.REPO }}
-          GIT_BRANCH: ${{ github.sha }}
-
-      - name: 🟠 · 🧩 Setup Node & pnpm
-        uses: vezham/vx-deployer/.github/actions/common/setup-install@timeline
-        with:
-          HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-
-      - name: 🔵 · 🧹 Lint • ESLint
-        shell: bash
-        run: |
-          pnpm nx run-many -t lint
-
-      - name: 🟠 · ⛭ NX • Post Ops
-        if: always()
-        uses: vezham/vx-deployer/.github/actions/nx/post-ops@timeline
-
-  format:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 🔵 · 🔎 Set short SHA
-        shell: bash
-        run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
-
-      - name: 🟠 · 🧰 Checkout • ${{ env.REPO }}@${{ env.SHORT_SHA }}
-        uses: vezham/vx-deployer/.github/actions/common/setup-checkout@timeline
-        with:
-          GIT_REPO: ${{ env.REPO }}
-          GIT_BRANCH: ${{ github.sha }}
-
-      - name: 🟠 · 🧩 Setup Node & pnpm
-        uses: vezham/vx-deployer/.github/actions/common/setup-install@timeline
-        with:
-          HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-
-      - name: 🔵 · 🎨 Format • Prettier
-        shell: bash
-        run: |
-          pnpm nx run @vx:@vx-ci/format-check
-
-      - name: 🟠 · ⛭ NX • Post Ops
-        if: always()
-        uses: vezham/vx-deployer/.github/actions/nx/post-ops@timeline
-
-  tests:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 🔵 · 🔎 Set short SHA
-        shell: bash
-        run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
-
-      - name: 🟠 · 🧰 Checkout • ${{ env.REPO }}@${{ env.SHORT_SHA }}
-        uses: vezham/vx-deployer/.github/actions/common/setup-checkout@timeline
-        with:
-          GIT_REPO: ${{ env.REPO }}
-          GIT_BRANCH: ${{ github.sha }}
-
-      - name: 🟠 · 🧩 Setup Node & pnpm
-        uses: vezham/vx-deployer/.github/actions/common/setup-install@timeline
-        with:
-          HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-
-      - name: 🔵 · 🧪 Test • Vitest
-        shell: bash
-        run: |
-          pnpm nx run-many -t test --passWithNoTests --exclude=${{ env.VX_SKIP }}
-
-      - name: 🟠 · ⛭ NX • Post Ops
-        if: always()
-        uses: vezham/vx-deployer/.github/actions/nx/post-ops@timeline
-
-  e2e:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-
-    steps:
-      - name: 🔵 · 🔎 Set short SHA
-        shell: bash
-        run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
-
-      - name: 🟠 · 🧰 Checkout • ${{ env.REPO }}@${{ env.SHORT_SHA }}
-        uses: vezham/vx-deployer/.github/actions/common/setup-checkout@timeline
-        with:
-          GIT_REPO: ${{ env.REPO }}
-          GIT_BRANCH: ${{ github.sha }}
-
-      - name: 🟠 · 🧩 Setup Node & pnpm
-        uses: vezham/vx-deployer/.github/actions/common/setup-install@timeline
-        with:
-          HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-
-      - name: 🔵 · 🎭 E2E • Playwright
-        shell: bash
-        run: |
-          E2E_PROJECTS="$(pnpm nx show projects --withTarget e2e --json)"
-          if [ "$E2E_PROJECTS" = "[]" ]; then
-            echo "No Nx projects define an e2e target; skipping Playwright install."
-            exit 0
-          fi
-
-          npx playwright install --with-deps
-          pnpm nx run-many -t e2e
-
-      - name: 🟠 · ⛭ NX • Post Ops
-        if: always()
-        uses: vezham/vx-deployer/.github/actions/nx/post-ops@timeline
-
-  audit:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    concurrency:
-      group: audit-${{ github.workflow }}-${{ github.sha }}
-      cancel-in-progress: false
-
-    steps:
-      - name: 🔵 · 🔎 Set short SHA
-        shell: bash
-        run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
-
-      - name: 🟠 · 🧰 Checkout • ${{ env.REPO }}@${{ env.SHORT_SHA }}
-        uses: vezham/vx-deployer/.github/actions/common/setup-checkout@timeline
-        with:
-          GIT_REPO: ${{ env.REPO }}
-          GIT_BRANCH: ${{ github.sha }}
-
-      - name: 🟠 · 🧩 Setup Node & pnpm
-        uses: vezham/vx-deployer/.github/actions/common/setup-install@timeline
-        with:
-          HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-
-      - name: 🔵 · 🔍 Audit • Fallow & React Doctor
-        # id: audit
-        # continue-on-error: false
-        shell: bash
-        run: |
-          pnpm nx run @vx:@vx-ws/audit
-
-      - name: 🟠 · ⛭ NX • Post Ops
-        if: always()
-        uses: vezham/vx-deployer/.github/actions/nx/post-ops@timeline
-
-      - name: 🟠 · 🧾 Audit Summary
-        if: always()
-        uses: vezham/vx-deployer/.github/actions/common/summary-audit@timeline
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  summary:
-    if: always()
-    needs: [audit, build, types, lint, format, tests, e2e]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 🟠 · 🧾 QA Summary
-        uses: vezham/vx-deployer/.github/actions/common/summary-qa@timeline
-        with:
-          actor: ${{ env.ACTOR }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          audit_result: ${{ needs.audit.result }}
-          build_result: ${{ needs.build.result }}
-          types_result: ${{ needs.types.result }}
-          lint_result: ${{ needs.lint.result }}
-          format_result: ${{ needs.format.result }}
-          tests_result: ${{ needs.tests.result }}
-          e2e_result: ${{ needs.e2e.result }}
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm setup:go
+      - run: pnpm nx run-many -t build,test,lint,typecheck --parallel=2
+      - run: pnpm nx run tamizhi-contracts-go:check-contracts
+      - run: pnpm nx run @vx:format-check
+      - run: docker build -t tamizhi-api:qa .

@@ -209,3 +209,13 @@ firebase-debug.*.log*
 .claude/worktrees
 .claude/settings.local.json
 .vitest
+
+# vx-bot/NOTE: Local Go toolchain, caches, and runtime data.
+.tools/
+.cache/
+.tamizhi/
+dist/
+
+config/tamizhi.json
+.neon
+.env.local

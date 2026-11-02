@@ -522,6 +522,9 @@ importers:
       '@vx-cli/react':
         specifier: 26.0.3
         version: 26.0.3(@nx/devkit@24.0.2(nx@24.0.2(@swc-node/register@1.11.1(@swc/core@1.15.41(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@10.2.2)(typescript@6.0.3))(@swc/core@1.15.41(@swc/helpers@0.5.23))))(nx@24.0.2(@swc-node/register@1.11.1(@swc/core@1.15.41(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@10.2.2)(typescript@6.0.3))(@swc/core@1.15.41(@swc/helpers@0.5.23)))
+      '@vx/go':
+        specifier: workspace:*
+        version: link:packages/vx/go
       axios:
         specifier: ^1.20.0
         version: 1.20.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
@@ -651,6 +654,8 @@ importers:
       yargs:
         specifier: 17.7.3
         version: 17.7.3
+
+  packages/vx/go: {}
 
   packages/vx/react: {}
 

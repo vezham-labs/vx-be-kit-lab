@@ -19,12 +19,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
+          "scripts/go fmt ./...",
           "sort-package-json \"package.json\" \"**/package.json\" \"!**/node_modules/**\" --quiet",
           "prettier . --write --log-level silent --cache --cache-strategy metadata",
           "eslint --cache --cache-strategy metadata",
           "stylelint \"**/*.{css,module.css}\" --allow-empty-input --cache --cache-strategy metadata"
         ],
-        "parallel": true,
+        "parallel": false,
         "forwardAllArgs": false
       }
     },
@@ -139,23 +140,23 @@
       "command": "rm -rf ./.nx"
     },
     "test-hard": {
-      "command": "pnpm nx run-many -t test --exclude=@vx/fe-kit --passWithNoTests"
+      "command": "pnpm nx run-many -t test --exclude=@vx/be-kit --passWithNoTests"
     },
     "test:clean": {
-      "command": "pnpm nx run-many -t test --exclude=@vx/fe-kit --passWithNoTests --clearScreen",
+      "command": "pnpm nx run-many -t test --exclude=@vx/be-kit --passWithNoTests --clearScreen",
       "//TODO": "&& pnpm clean"
     },
     "test:changedsince": {
-      "command": "pnpm nx run-many -t test --exclude=@vx/fe-kit --skipNxCache --passWithNoTests --changed --coverage"
+      "command": "pnpm nx run-many -t test --exclude=@vx/be-kit --skipNxCache --passWithNoTests --changed --coverage"
     },
     "test:coverage": {
-      "command": "pnpm nx run-many -t test --exclude=@vx/fe-kit --passWithNoTests --coverage"
+      "command": "pnpm nx run-many -t test --exclude=@vx/be-kit --passWithNoTests --coverage"
     },
     "test:unit": {
-      "command": "pnpm nx run-many -t test --exclude=@vx/fe-kit --skipNxCache --passWithNoTests --reporter=json --outputFile=test-output/vitest/unit-test-results.json"
+      "command": "pnpm nx run-many -t test --exclude=@vx/be-kit --skipNxCache --passWithNoTests --reporter=json --outputFile=test-output/vitest/unit-test-results.json"
     },
     "test:unit-nc": {
-      "command": "pnpm nx run-many -t test --exclude=@vx/fe-kit --skipNxCache --passWithNoTests --reporter=json --outputFile=test-output/vitest/unit-test-results.json --no-cache"
+      "command": "pnpm nx run-many -t test --exclude=@vx/be-kit --skipNxCache --passWithNoTests --reporter=json --outputFile=test-output/vitest/unit-test-results.json --no-cache"
     },
     "test:audit": {
       "command": "node --test vx/tools/audit/*.test.mjs",
@@ -185,6 +186,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
+          "scripts/check-go-format",
           "prettier . --check --cache",
           "stylelint \"**/*.{css,module.css}\" --allow-empty-input --cache --cache-strategy metadata",
           "sort-package-json \"package.json\" \"**/package.json\" \"!**/node_modules/**\""
@@ -200,7 +202,7 @@
           "pnpm nx run-many -t typecheck",
           "pnpm nx run-many -t lint",
           "pnpm nx run @vx:@vx-ci/format-check",
-          "pnpm nx run-many -t test --passWithNoTests --exclude=@vx/fe-kit",
+          "pnpm nx run-many -t test --exclude=@vx/be-kit",
           "pnpm nx run-many -t e2e",
           "pnpm nx run @vx:@vx-ci/build"
         ],
@@ -237,6 +239,20 @@
     "test:release": {
       "command": "tsx --test vx/tools/release/run-release.test.ts",
       "cache": false
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm nx run @vx:@vx-ws/format",
+        "forwardAllArgs": false
+      }
+    },
+    "format-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm nx run @vx:@vx-ci/format-check",
+        "forwardAllArgs": false
+      }
     }
   }
 }

@@ -1,0 +1,11 @@
+{
+  "name": "@vx/go",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./generators.json": "./generators.json",
+    "./package.json": "./package.json"
+  },
+  "generators": "./generators.json"
+}

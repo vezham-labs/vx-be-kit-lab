@@ -1,0 +1,1263 @@
+{
+  "APIError": {
+    "type": "object",
+    "properties": {
+      "code": {
+        "type": "string"
+      },
+      "message": {
+        "type": "string"
+      }
+    },
+    "required": ["code", "message"],
+    "additionalProperties": false
+  },
+  "ApprovalDecision": {
+    "type": "object",
+    "properties": {
+      "runId": {
+        "type": "string"
+      },
+      "callId": {
+        "type": "string"
+      },
+      "approved": {
+        "type": "boolean"
+      }
+    },
+    "required": ["runId", "callId", "approved"],
+    "additionalProperties": false
+  },
+  "Attachment": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "mimeType": {
+        "type": "string"
+      },
+      "size": {
+        "type": "integer"
+      },
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": ["id", "name", "mimeType", "size"],
+    "additionalProperties": false
+  },
+  "AuthSession": {
+    "type": "object",
+    "properties": {
+      "canLogout": {
+        "type": "boolean"
+      },
+      "methods": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": ["id", "name"],
+          "additionalProperties": false
+        }
+      },
+      "user": {
+        "type": ["null", "object"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "roles": {
+            "type": ["null", "array"],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      },
+      "loginEnabled": {
+        "type": "boolean"
+      }
+    },
+    "required": ["canLogout", "methods", "loginEnabled"],
+    "additionalProperties": false
+  },
+  "BranchRequest": {
+    "type": "object",
+    "properties": {
+      "messageId": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      }
+    },
+    "required": ["messageId"],
+    "additionalProperties": false
+  },
+  "Capabilities": {
+    "type": "object",
+    "properties": {
+      "version": {
+        "type": "string"
+      },
+      "images": {
+        "type": "boolean"
+      },
+      "pdf": {
+        "type": "boolean"
+      },
+      "transcription": {
+        "type": "boolean"
+      },
+      "speech": {
+        "type": "boolean"
+      },
+      "oidc": {
+        "type": "boolean"
+      },
+      "sessions": {
+        "type": "boolean"
+      },
+      "replay": {
+        "type": "boolean"
+      },
+      "plugins": {
+        "type": "boolean"
+      },
+      "memory": {
+        "type": "boolean"
+      },
+      "checkpoints": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "version",
+      "images",
+      "pdf",
+      "transcription",
+      "speech",
+      "oidc",
+      "sessions",
+      "replay",
+      "plugins",
+      "memory",
+      "checkpoints"
+    ],
+    "additionalProperties": false
+  },
+  "Checkpoint": {
+    "type": "object",
+    "properties": {
+      "summary": {
+        "type": "string"
+      },
+      "id": {
+        "type": "string"
+      },
+      "conversationId": {
+        "type": "string"
+      },
+      "label": {
+        "type": "string"
+      },
+      "messages": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "attachments": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "mimeType": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "integer"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name", "mimeType", "size"],
+                "additionalProperties": false
+              }
+            },
+            "toolCalls": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "signature": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name", "arguments"],
+                "additionalProperties": false
+              }
+            },
+            "toolCallId": {
+              "type": "string"
+            },
+            "rating": {
+              "type": "string"
+            },
+            "tasks": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "done": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["label", "done"],
+                "additionalProperties": false
+              }
+            },
+            "persona": {
+              "type": "string"
+            },
+            "outfit": {
+              "type": "string"
+            }
+          },
+          "required": ["role", "content"],
+          "additionalProperties": false
+        }
+      },
+      "createdAt": {
+        "type": "integer"
+      }
+    },
+    "required": ["id", "conversationId", "label", "messages", "createdAt"],
+    "additionalProperties": false
+  },
+  "CheckpointRequest": {
+    "type": "object",
+    "properties": {
+      "label": {
+        "type": "string"
+      }
+    },
+    "required": ["label"],
+    "additionalProperties": false
+  },
+  "ClientAction": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "path": {
+        "type": "string"
+      },
+      "query": {
+        "type": "string"
+      }
+    },
+    "required": ["name"],
+    "additionalProperties": false
+  },
+  "Conversation": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "messages": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "attachments": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "mimeType": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "integer"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name", "mimeType", "size"],
+                "additionalProperties": false
+              }
+            },
+            "toolCalls": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "signature": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name", "arguments"],
+                "additionalProperties": false
+              }
+            },
+            "toolCallId": {
+              "type": "string"
+            },
+            "rating": {
+              "type": "string"
+            },
+            "tasks": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "done": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["label", "done"],
+                "additionalProperties": false
+              }
+            },
+            "persona": {
+              "type": "string"
+            },
+            "outfit": {
+              "type": "string"
+            }
+          },
+          "required": ["role", "content"],
+          "additionalProperties": false
+        }
+      },
+      "updatedAt": {
+        "type": "integer"
+      },
+      "version": {
+        "type": "integer"
+      },
+      "parentId": {
+        "type": "string"
+      },
+      "branchFrom": {
+        "type": "string"
+      },
+      "summary": {
+        "type": "string"
+      }
+    },
+    "required": ["id", "title", "messages", "updatedAt", "version"],
+    "additionalProperties": false
+  },
+  "ConversationPage": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "messages": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "attachments": {
+                    "type": ["null", "array"],
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "mimeType": {
+                          "type": "string"
+                        },
+                        "size": {
+                          "type": "integer"
+                        },
+                        "text": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["id", "name", "mimeType", "size"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "toolCalls": {
+                    "type": ["null", "array"],
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "signature": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "arguments": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["id", "name", "arguments"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "toolCallId": {
+                    "type": "string"
+                  },
+                  "rating": {
+                    "type": "string"
+                  },
+                  "tasks": {
+                    "type": ["null", "array"],
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "done": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": ["label", "done"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "persona": {
+                    "type": "string"
+                  },
+                  "outfit": {
+                    "type": "string"
+                  }
+                },
+                "required": ["role", "content"],
+                "additionalProperties": false
+              }
+            },
+            "updatedAt": {
+              "type": "integer"
+            },
+            "version": {
+              "type": "integer"
+            },
+            "parentId": {
+              "type": "string"
+            },
+            "branchFrom": {
+              "type": "string"
+            },
+            "summary": {
+              "type": "string"
+            }
+          },
+          "required": ["id", "title", "messages", "updatedAt", "version"],
+          "additionalProperties": false
+        }
+      },
+      "nextCursor": {
+        "type": "string"
+      }
+    },
+    "required": ["items"],
+    "additionalProperties": false
+  },
+  "FeedbackRequest": {
+    "type": "object",
+    "properties": {
+      "rating": {
+        "type": "string"
+      }
+    },
+    "required": ["rating"],
+    "additionalProperties": false
+  },
+  "LoginMethod": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      }
+    },
+    "required": ["id", "name"],
+    "additionalProperties": false
+  },
+  "Memory": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "text": {
+        "type": "string"
+      },
+      "tags": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "string"
+        }
+      },
+      "score": {
+        "type": "number"
+      },
+      "createdAt": {
+        "type": "integer"
+      }
+    },
+    "required": ["id", "text", "createdAt"],
+    "additionalProperties": false
+  },
+  "MemoryRequest": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      },
+      "tags": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": ["text"],
+    "additionalProperties": false
+  },
+  "Message": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "role": {
+        "type": "string"
+      },
+      "content": {
+        "type": "string"
+      },
+      "attachments": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "mimeType": {
+              "type": "string"
+            },
+            "size": {
+              "type": "integer"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": ["id", "name", "mimeType", "size"],
+          "additionalProperties": false
+        }
+      },
+      "toolCalls": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "signature": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "arguments": {
+              "type": "string"
+            }
+          },
+          "required": ["id", "name", "arguments"],
+          "additionalProperties": false
+        }
+      },
+      "toolCallId": {
+        "type": "string"
+      },
+      "rating": {
+        "type": "string"
+      },
+      "tasks": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "done": {
+              "type": "boolean"
+            }
+          },
+          "required": ["label", "done"],
+          "additionalProperties": false
+        }
+      },
+      "persona": {
+        "type": "string"
+      },
+      "outfit": {
+        "type": "string"
+      }
+    },
+    "required": ["role", "content"],
+    "additionalProperties": false
+  },
+  "ModelInfo": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "provider": {
+        "type": "string"
+      },
+      "modalities": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "string"
+        }
+      },
+      "contextWindow": {
+        "type": "integer"
+      },
+      "fast": {
+        "type": "boolean"
+      }
+    },
+    "required": ["id", "name", "provider"],
+    "additionalProperties": false
+  },
+  "PluginInfo": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "kind": {
+        "type": "string"
+      },
+      "enabled": {
+        "type": "boolean"
+      },
+      "status": {
+        "type": "string"
+      },
+      "dependencies": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": ["name", "kind", "enabled", "status", "dependencies"],
+    "additionalProperties": false
+  },
+  "PluginUpdate": {
+    "type": "object",
+    "properties": {
+      "enabled": {
+        "type": "boolean"
+      }
+    },
+    "required": ["enabled"],
+    "additionalProperties": false
+  },
+  "Principal": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "roles": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": ["id"],
+    "additionalProperties": false
+  },
+  "ProviderAuthorization": {
+    "type": "object",
+    "properties": {
+      "url": {
+        "type": "string"
+      }
+    },
+    "required": ["url"],
+    "additionalProperties": false
+  },
+  "ProviderKeyRequest": {
+    "type": "object",
+    "properties": {
+      "apiKey": {
+        "type": "string"
+      }
+    },
+    "required": ["apiKey"],
+    "additionalProperties": false
+  },
+  "ProviderOAuthRequest": {
+    "type": "object",
+    "properties": {
+      "projectId": {
+        "type": "string"
+      },
+      "returnTo": {
+        "type": "string"
+      }
+    },
+    "required": ["projectId", "returnTo"],
+    "additionalProperties": false
+  },
+  "ProviderSettings": {
+    "type": "object",
+    "properties": {
+      "oauthAvailable": {
+        "type": "boolean"
+      },
+      "authMethod": {
+        "type": "string"
+      },
+      "projectId": {
+        "type": "string"
+      },
+      "id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "connected": {
+        "type": "boolean"
+      },
+      "models": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "provider": {
+              "type": "string"
+            },
+            "modalities": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "string"
+              }
+            },
+            "contextWindow": {
+              "type": "integer"
+            },
+            "fast": {
+              "type": "boolean"
+            }
+          },
+          "required": ["id", "name", "provider"],
+          "additionalProperties": false
+        }
+      },
+      "transcriptionModel": {
+        "type": "string"
+      },
+      "speechModel": {
+        "type": "string"
+      }
+    },
+    "required": ["oauthAvailable", "id", "name", "connected", "models"],
+    "additionalProperties": false
+  },
+  "RenameRequest": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      }
+    },
+    "required": ["title"],
+    "additionalProperties": false
+  },
+  "RunInfo": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "conversationId": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      },
+      "lastSequence": {
+        "type": "integer"
+      },
+      "parentId": {
+        "type": "string"
+      },
+      "usage": {
+        "type": "object",
+        "properties": {
+          "inputTokens": {
+            "type": "integer"
+          },
+          "outputTokens": {
+            "type": "integer"
+          },
+          "totalTokens": {
+            "type": "integer"
+          }
+        },
+        "required": ["inputTokens", "outputTokens", "totalTokens"],
+        "additionalProperties": false
+      },
+      "createdAt": {
+        "type": "integer"
+      },
+      "updatedAt": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "id",
+      "conversationId",
+      "status",
+      "lastSequence",
+      "usage",
+      "createdAt",
+      "updatedAt"
+    ],
+    "additionalProperties": false
+  },
+  "RunRequest": {
+    "type": "object",
+    "properties": {
+      "conversationId": {
+        "type": "string"
+      },
+      "messages": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "attachments": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "mimeType": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "integer"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name", "mimeType", "size"],
+                "additionalProperties": false
+              }
+            },
+            "toolCalls": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "signature": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name", "arguments"],
+                "additionalProperties": false
+              }
+            },
+            "toolCallId": {
+              "type": "string"
+            },
+            "rating": {
+              "type": "string"
+            },
+            "tasks": {
+              "type": ["null", "array"],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "done": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["label", "done"],
+                "additionalProperties": false
+              }
+            },
+            "persona": {
+              "type": "string"
+            },
+            "outfit": {
+              "type": "string"
+            }
+          },
+          "required": ["role", "content"],
+          "additionalProperties": false
+        }
+      },
+      "model": {
+        "type": "string"
+      },
+      "fast": {
+        "type": "boolean"
+      },
+      "permission": {
+        "type": "string",
+        "enum": ["ask", "safe", "full"]
+      },
+      "title": {
+        "type": "string"
+      },
+      "expectedVersion": {
+        "type": ["null", "integer"]
+      }
+    },
+    "required": ["conversationId", "messages", "fast", "permission"],
+    "additionalProperties": false
+  },
+  "SessionInfo": {
+    "type": "object",
+    "properties": {
+      "user": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "roles": {
+            "type": ["null", "array"],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      },
+      "loginUrl": {
+        "type": "string"
+      },
+      "expiresAt": {
+        "type": "integer"
+      }
+    },
+    "required": ["user"],
+    "additionalProperties": false
+  },
+  "SpeechRequest": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      },
+      "voice": {
+        "type": "string"
+      }
+    },
+    "required": ["text"],
+    "additionalProperties": false
+  },
+  "StreamEvent": {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string"
+      },
+      "runId": {
+        "type": "string"
+      },
+      "conversationId": {
+        "type": "string"
+      },
+      "sequence": {
+        "type": "integer"
+      },
+      "delta": {
+        "type": "string"
+      },
+      "callId": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "input": true,
+      "output": true,
+      "reason": {
+        "type": "string"
+      },
+      "message": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      },
+      "parentRunId": {
+        "type": "string"
+      },
+      "usage": {
+        "type": ["null", "object"],
+        "properties": {
+          "inputTokens": {
+            "type": "integer"
+          },
+          "outputTokens": {
+            "type": "integer"
+          },
+          "totalTokens": {
+            "type": "integer"
+          }
+        },
+        "required": ["inputTokens", "outputTokens", "totalTokens"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["type", "runId", "conversationId", "sequence"],
+    "additionalProperties": false
+  },
+  "Task": {
+    "type": "object",
+    "properties": {
+      "label": {
+        "type": "string"
+      },
+      "done": {
+        "type": "boolean"
+      }
+    },
+    "required": ["label", "done"],
+    "additionalProperties": false
+  },
+  "TasksRequest": {
+    "type": "object",
+    "properties": {
+      "tasks": {
+        "type": ["null", "array"],
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "done": {
+              "type": "boolean"
+            }
+          },
+          "required": ["label", "done"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["tasks"],
+    "additionalProperties": false
+  },
+  "ToolCall": {
+    "type": "object",
+    "properties": {
+      "signature": {
+        "type": "string"
+      },
+      "id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "arguments": {
+        "type": "string"
+      }
+    },
+    "required": ["id", "name", "arguments"],
+    "additionalProperties": false
+  },
+  "Transcript": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": ["text"],
+    "additionalProperties": false
+  },
+  "Usage": {
+    "type": "object",
+    "properties": {
+      "inputTokens": {
+        "type": "integer"
+      },
+      "outputTokens": {
+        "type": "integer"
+      },
+      "totalTokens": {
+        "type": "integer"
+      }
+    },
+    "required": ["inputTokens", "outputTokens", "totalTokens"],
+    "additionalProperties": false
+  }
+}

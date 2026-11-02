@@ -207,3 +207,10 @@ firebase-debug.*.log*
 # Claude
 .claude/worktrees
 .claude/settings.local.json
+
+# Local Go toolchain, caches and private runtime configuration
+.tools/
+.cache/
+.neon
+.env.local
+config/tamizhi.json

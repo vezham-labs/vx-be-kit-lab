@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+frontend=${1:?Usage: scripts/sync-tamizhi-contracts /path/to/frontend-repo [--check]}
+cd "$repo_root"
+output="$frontend/packages/tamizhi/contracts/src/lib/generated"
+if [ "${2:-}" = "--check" ]; then
+  ./scripts/go run ./tools/contracts -check
+  for file in api.ts schemas.json openapi.json; do cmp "api/tamizhi/$file" "$output/$file"; done
+else
+  ./scripts/go run ./tools/contracts
+  mkdir -p "$output"
+  cp api/tamizhi/api.ts api/tamizhi/schemas.json api/tamizhi/openapi.json "$output/"
+fi

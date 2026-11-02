@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "directory": {
+      "type": "string"
+    },
+    "application": {
+      "type": "boolean",
+      "default": false
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": ["name", "directory"]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "tamizhi-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/tamizhi-api",
+  "projectType": "application",
+  "tags": ["language:go"],
+  "implicitDependencies": ["tamizhi-core-go"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "scripts/go build -trimpath -o dist/tamizhi-api ./apps/tamizhi-api"
+      },
+      "outputs": ["{workspaceRoot}/dist/tamizhi-api"],
+      "inputs": ["production", "^production", "goGlobals"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "scripts/go test -race -count=1 ./apps/tamizhi-api/..."
+      },
+      "inputs": ["default", "^default", "goGlobals"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "scripts/go vet ./apps/tamizhi-api/..."
+      },
+      "inputs": ["default", "^default", "goGlobals"]
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "options": {
+        "command": "scripts/go run ./apps/tamizhi-api"
+      }
+    }
+  }
+}

@@ -28,6 +28,8 @@ const ignores = [
   '**/.next/**',
   '**/.vezham',
   '**/.nx',
+  '**/.tools',
+  '**/.cache',
   '**/lint-staged.config.cjs',
   '**/routeTree.gen.ts',
   '**/src/generated/**',
