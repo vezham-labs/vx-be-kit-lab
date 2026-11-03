@@ -14,6 +14,18 @@
         "required": ["code", "message"],
         "additionalProperties": false
       },
+      "ActivityAppearance": {
+        "type": "object",
+        "properties": {
+          "persona": {
+            "type": "string"
+          },
+          "outfit": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
       "ApprovalDecision": {
         "type": "object",
         "properties": {
@@ -263,6 +275,12 @@
                     "additionalProperties": false
                   }
                 },
+                "outfitLocked": {
+                  "type": "boolean"
+                },
+                "profileId": {
+                  "type": "string"
+                },
                 "persona": {
                   "type": "string"
                 },
@@ -399,6 +417,12 @@
                     "additionalProperties": false
                   }
                 },
+                "outfitLocked": {
+                  "type": "boolean"
+                },
+                "profileId": {
+                  "type": "string"
+                },
                 "persona": {
                   "type": "string"
                 },
@@ -525,6 +549,12 @@
                           "required": ["label", "done"],
                           "additionalProperties": false
                         }
+                      },
+                      "outfitLocked": {
+                        "type": "boolean"
+                      },
+                      "profileId": {
+                        "type": "string"
                       },
                       "persona": {
                         "type": "string"
@@ -708,6 +738,12 @@
               "required": ["label", "done"],
               "additionalProperties": false
             }
+          },
+          "outfitLocked": {
+            "type": "boolean"
+          },
+          "profileId": {
+            "type": "string"
           },
           "persona": {
             "type": "string"
@@ -961,6 +997,21 @@
       "RunRequest": {
         "type": "object",
         "properties": {
+          "activityProfiles": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "persona": {
+                  "type": "string"
+                },
+                "outfit": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
           "conversationId": {
             "type": "string"
           },
@@ -1046,6 +1097,12 @@
                     "required": ["label", "done"],
                     "additionalProperties": false
                   }
+                },
+                "outfitLocked": {
+                  "type": "boolean"
+                },
+                "profileId": {
+                  "type": "string"
                 },
                 "persona": {
                   "type": "string"

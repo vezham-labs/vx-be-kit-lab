@@ -30,11 +30,19 @@ export interface Message {
   toolCallId?: string
   rating?: string
   tasks?: Array<Task>
+  outfitLocked?: boolean
+  profileId?: string
+  persona?: string
+  outfit?: string
+}
+
+export interface ActivityAppearance {
   persona?: string
   outfit?: string
 }
 
 export interface RunRequest {
+  activityProfiles?: Record<string, ActivityAppearance>
   conversationId: string
   messages: Array<Message>
   model?: string

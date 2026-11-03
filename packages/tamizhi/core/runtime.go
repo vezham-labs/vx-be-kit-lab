@@ -419,9 +419,7 @@ func (r *Runtime) drive(ctx context.Context, principal c.Principal, request c.Ru
 	if item.Summary != "" {
 		messages = compactHistory(messages, item.Summary)
 	}
-	if r.options.SystemPrompt != "" {
-		messages = append([]c.Message{{Role: "system", Content: r.options.SystemPrompt}}, messages...)
-	}
+	appearance := request.Messages[len(request.Messages)-1]
 	messages, err = r.resolveAttachments(ctx, principal, model, messages)
 	if err != nil {
 		failure = err
@@ -431,9 +429,9 @@ func (r *Runtime) drive(ctx context.Context, principal c.Principal, request c.Ru
 		if ctx.Err() != nil {
 			return
 		}
-		assistant := c.Message{ID: newID(), Role: "assistant"}
+		assistant := c.Message{ID: newID(), Role: "assistant", OutfitLocked: appearance.OutfitLocked, ProfileID: appearance.ProfileID, Persona: appearance.Persona, Outfit: appearance.Outfit}
 		var calls []c.ToolCall
-		err = entry.provider.Stream(ctx, ProviderInput{Model: model.ID, Messages: messages, Tools: r.toolList(depth), Fast: request.Fast}, func(delta ProviderDelta) error {
+		err = entry.provider.Stream(ctx, ProviderInput{Model: model.ID, Messages: withPersona(messages, r.options.SystemPrompt, appearance.Persona), Tools: r.toolList(depth), Fast: request.Fast}, func(delta ProviderDelta) error {
 			if len(assistant.Content)+len(delta.Text) > 100000 {
 				return errors.New("response exceeds output budget")
 			}
@@ -486,6 +484,18 @@ func (r *Runtime) drive(ctx context.Context, principal c.Principal, request c.Ru
 			}(i, call)
 		}
 		wait.Wait()
+		appearance = request.Messages[len(request.Messages)-1]
+		for _, call := range calls {
+			if override, ok := request.ActivityProfiles[call.Name]; ok {
+				appearance = request.Messages[len(request.Messages)-1]
+				if override.Persona != "" {
+					appearance.Persona = override.Persona
+				}
+				if override.Outfit != "" && !appearance.OutfitLocked {
+					appearance.Outfit = override.Outfit
+				}
+			}
+		}
 		for _, result := range results {
 			if result.ID != "" {
 				messages = append(messages, result)

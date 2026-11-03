@@ -32,25 +32,33 @@ type Attachment struct {
 	Text     string `json:"text,omitempty"`
 }
 type Message struct {
-	ID          string       `json:"id,omitempty"`
-	Role        string       `json:"role"`
-	Content     string       `json:"content"`
-	Attachments []Attachment `json:"attachments,omitempty"`
-	ToolCalls   []ToolCall   `json:"toolCalls,omitempty"`
-	ToolCallID  string       `json:"toolCallId,omitempty"`
-	Rating      string       `json:"rating,omitempty"`
-	Tasks       []Task       `json:"tasks,omitempty"`
-	Persona     string       `json:"persona,omitempty"`
-	Outfit      string       `json:"outfit,omitempty"`
+	ID           string       `json:"id,omitempty"`
+	Role         string       `json:"role"`
+	Content      string       `json:"content"`
+	Attachments  []Attachment `json:"attachments,omitempty"`
+	ToolCalls    []ToolCall   `json:"toolCalls,omitempty"`
+	ToolCallID   string       `json:"toolCallId,omitempty"`
+	Rating       string       `json:"rating,omitempty"`
+	Tasks        []Task       `json:"tasks,omitempty"`
+	OutfitLocked bool         `json:"outfitLocked,omitempty"`
+	ProfileID    string       `json:"profileId,omitempty"`
+	Persona      string       `json:"persona,omitempty"`
+	Outfit       string       `json:"outfit,omitempty"`
 }
+type ActivityAppearance struct {
+	Persona string `json:"persona,omitempty"`
+	Outfit  string `json:"outfit,omitempty"`
+}
+
 type RunRequest struct {
-	ConversationID  string         `json:"conversationId"`
-	Messages        []Message      `json:"messages"`
-	Model           string         `json:"model,omitempty"`
-	Fast            bool           `json:"fast"`
-	Permission      PermissionMode `json:"permission"`
-	Title           string         `json:"title,omitempty"`
-	ExpectedVersion *int64         `json:"expectedVersion,omitempty"`
+	ActivityProfiles map[string]ActivityAppearance `json:"activityProfiles,omitempty"`
+	ConversationID   string                        `json:"conversationId"`
+	Messages         []Message                     `json:"messages"`
+	Model            string                        `json:"model,omitempty"`
+	Fast             bool                          `json:"fast"`
+	Permission       PermissionMode                `json:"permission"`
+	Title            string                        `json:"title,omitempty"`
+	ExpectedVersion  *int64                        `json:"expectedVersion,omitempty"`
 }
 type ApprovalDecision struct {
 	RunID    string `json:"runId"`
@@ -220,12 +228,20 @@ func (r *RunRequest) Validate() error {
 	if len(r.Model) > 256 || len(r.Title) > 128 {
 		return errors.New("model or title is too long")
 	}
+	if len(r.ActivityProfiles) > 64 {
+		return errors.New("too many activity profiles")
+	}
+	for name, appearance := range r.ActivityProfiles {
+		if len(name) == 0 || len(name) > 256 || len(appearance.Persona) > 32 || len(appearance.Outfit) > 32 {
+			return errors.New("invalid activity profile")
+		}
+	}
 	for i := range r.Messages {
 		m := &r.Messages[i]
 		if m.Role != "user" && m.Role != "assistant" {
 			return errors.New("client history may only contain user or assistant messages")
 		}
-		if len(m.Content) > 100000 || len(m.Attachments) > 8 || len(m.ID) > 128 {
+		if len(m.Content) > 100000 || len(m.Attachments) > 8 || len(m.ID) > 128 || len(m.ProfileID) > 128 || len(m.Persona) > 32 || len(m.Outfit) > 32 {
 			return errors.New("message exceeds limits")
 		}
 		if len(m.ToolCalls) != 0 || m.ToolCallID != "" {

@@ -16,7 +16,7 @@ import (
 	c "github.com/vezham-labs/vx-be-kit-lab/packages/tamizhi/contracts"
 )
 
-var types = []any{c.Task{}, c.ToolCall{}, c.Attachment{}, c.Message{}, c.RunRequest{}, c.ApprovalDecision{}, c.Usage{}, c.StreamEvent{}, c.ModelInfo{}, c.Conversation{}, c.ConversationPage{}, c.RenameRequest{}, c.FeedbackRequest{}, c.TasksRequest{}, c.BranchRequest{}, c.Checkpoint{}, c.CheckpointRequest{}, c.RunInfo{}, c.PluginInfo{}, c.PluginUpdate{}, c.Principal{}, c.SessionInfo{}, c.AuthSession{}, c.LoginMethod{}, c.Capabilities{}, c.Memory{}, c.MemoryRequest{}, c.Transcript{}, c.SpeechRequest{}, c.ClientAction{}, c.APIError{}, c.ProviderSettings{}, c.ProviderKeyRequest{}, c.ProviderOAuthRequest{}, c.ProviderAuthorization{}}
+var types = []any{c.Task{}, c.ToolCall{}, c.Attachment{}, c.Message{}, c.ActivityAppearance{}, c.RunRequest{}, c.ApprovalDecision{}, c.Usage{}, c.StreamEvent{}, c.ModelInfo{}, c.Conversation{}, c.ConversationPage{}, c.RenameRequest{}, c.FeedbackRequest{}, c.TasksRequest{}, c.BranchRequest{}, c.Checkpoint{}, c.CheckpointRequest{}, c.RunInfo{}, c.PluginInfo{}, c.PluginUpdate{}, c.Principal{}, c.SessionInfo{}, c.AuthSession{}, c.LoginMethod{}, c.Capabilities{}, c.Memory{}, c.MemoryRequest{}, c.Transcript{}, c.SpeechRequest{}, c.ClientAction{}, c.APIError{}, c.ProviderSettings{}, c.ProviderKeyRequest{}, c.ProviderOAuthRequest{}, c.ProviderAuthorization{}}
 
 func ts(t reflect.Type) string {
 	if t == reflect.TypeFor[c.PermissionMode]() {
@@ -141,7 +141,7 @@ func generate() (map[string][]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return map[string][]byte{"api.ts": []byte(text.String()), "schemas.json": append(schemaBytes, '\n'), "openapi.json": append(raw, '\n')}, nil
+	return map[string][]byte{"api.ts": []byte(strings.TrimRight(text.String(), "\n") + "\n"), "schemas.json": append(schemaBytes, '\n'), "openapi.json": append(raw, '\n')}, nil
 }
 func main() {
 	out := flag.String("output", "api/tamizhi", "output directory")
