@@ -201,11 +201,11 @@ func (a *API) plugin(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &body) {
 		return
 	}
-	if err := a.Runtime.SetPlugin(r.PathValue("name"), body.Enabled); err != nil {
-		apiError(w, err)
-		return
-	}
-	if err := a.Runtime.store.SetSetting(r.Context(), "system", "plugin."+r.PathValue("name"), strconv.FormatBool(body.Enabled)); err != nil {
+	if err := a.Runtime.ConfigurePlugin(r.Context(), r.PathValue("name"), body.Enabled); err != nil {
+		if errors.Is(err, errPluginPersistence) {
+			respond(w, http.StatusServiceUnavailable, c.APIError{Code: "setting_unconfirmed", Message: "Unable to confirm saved plugin settings. Refresh status before retrying."})
+			return
+		}
 		apiError(w, err)
 		return
 	}

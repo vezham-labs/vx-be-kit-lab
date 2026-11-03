@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"testing"
 	"time"
+
+	cordis "github.com/tr1v3r/cordis-go"
 )
 
 // TestBrowserFixtureServer is an opt-in process used only by local Playwright
@@ -33,6 +35,16 @@ func TestBrowserFixtureServer(t *testing.T) {
 	defer runtime.Close()
 	if err = runtime.Mount(MemoryPlugin(), true); err != nil {
 		t.Fatal(err)
+	}
+	attempts := 0
+	if err := runtime.Mount(PluginDefinition{Name: "optional.browser-retry", Kind: "test", Optional: true, Apply: func(*cordis.Context, *Runtime) error {
+		attempts++
+		if attempts == 1 {
+			return errors.New("browser activation failure")
+		}
+		return nil
+	}}, true); !errors.Is(err, errPluginActivation) {
+		t.Fatalf("expected fixture activation failure: %v", err)
 	}
 	auth, err := NewAuth(ctx, store, nil, OIDCOptions{Connections: []LoginConnection{{ID: "google", Name: "Google", Params: map[string]string{"kc_idp_hint": "google"}}, {ID: "microsoft", Name: "Microsoft", Params: map[string]string{"kc_idp_hint": "microsoft"}}, {ID: "github", Name: "GitHub", Params: map[string]string{"kc_idp_hint": "github"}}, {ID: "sso", Name: "Organization SSO", Params: map[string]string{"kc_idp_hint": "sso"}}}, Issuer: "http://127.0.0.1:4397", ClientID: "browser-fixture", RedirectURL: "http://127.0.0.1:4398/api/tamizhi/auth/callback", FrontendURL: "http://127.0.0.1:4399/chat/new", AdminSubjects: []string{"browser-user"}})
 	if err != nil {

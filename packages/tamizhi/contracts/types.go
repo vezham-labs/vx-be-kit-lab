@@ -143,6 +143,8 @@ type RunInfo struct {
 	UpdatedAt      int64  `json:"updatedAt"`
 }
 type PluginInfo struct {
+	Required     bool     `json:"required"`
+	Error        string   `json:"error,omitempty"`
 	Name         string   `json:"name"`
 	Kind         string   `json:"kind"`
 	Enabled      bool     `json:"enabled"`

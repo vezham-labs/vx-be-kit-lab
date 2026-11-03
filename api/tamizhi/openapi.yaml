@@ -680,13 +680,18 @@ components:
           - array
         enabled:
           type: boolean
+        error:
+          type: string
         kind:
           type: string
         name:
           type: string
+        required:
+          type: boolean
         status:
           type: string
       required:
+      - required
       - name
       - kind
       - enabled
@@ -1636,14 +1641,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PluginInfo'
-          description: Successful response
+                items:
+                  $ref: '#/components/schemas/PluginInfo'
+                type: array
+          description: Saved desired enablement and current plugin states; failed activation is represented by status and error
         "401":
           description: Sign in required
         "403":
           description: Access denied
         "409":
           description: Concurrent update conflict
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Setting persistence is unconfirmed; runtime was not changed. Refresh status before retrying.
   /providers:
     get:
       responses:

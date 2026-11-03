@@ -17,6 +17,7 @@ import (
 )
 
 type MCPOptions struct {
+	Required   bool              `json:"required,omitempty"`
 	Name       string            `json:"name"`
 	URL        string            `json:"url,omitempty"`
 	Command    string            `json:"command,omitempty"`
@@ -43,7 +44,7 @@ func (t headerTransport) RoundTrip(request *http.Request) (*http.Response, error
 	return t.base.RoundTrip(copy)
 }
 func MCPPlugin(options MCPOptions) PluginDefinition {
-	return PluginDefinition{Name: "mcp." + options.Name, Kind: "mcp", Apply: func(ctx *cordis.Context, r *Runtime) error {
+	return PluginDefinition{Name: "mcp." + options.Name, Kind: "mcp", Optional: !options.Required, Apply: func(ctx *cordis.Context, r *Runtime) error {
 		if !regexp.MustCompile(`^[a-zA-Z0-9_-]{1,30}$`).MatchString(options.Name) || len(options.AllowTools) == 0 {
 			return errors.New("MCP requires a valid name and explicit tool allowlist")
 		}

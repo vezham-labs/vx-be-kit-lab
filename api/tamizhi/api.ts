@@ -148,6 +148,8 @@ export interface RunInfo {
 }
 
 export interface PluginInfo {
+  required: boolean
+  error?: string
   name: string
   kind: string
   enabled: boolean

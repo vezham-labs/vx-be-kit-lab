@@ -972,6 +972,12 @@
   "PluginInfo": {
     "type": "object",
     "properties": {
+      "required": {
+        "type": "boolean"
+      },
+      "error": {
+        "type": "string"
+      },
       "name": {
         "type": "string"
       },
@@ -995,6 +1001,7 @@
       }
     },
     "required": [
+      "required",
       "name",
       "kind",
       "enabled",

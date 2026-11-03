@@ -12,6 +12,9 @@ import (
 	c "github.com/vezham-labs/vx-be-kit-lab/packages/tamizhi/contracts"
 )
 
+var errPluginActivation = errors.New("plugin activation failed")
+var errPluginPersistence = errors.New("plugin setting persistence failed")
+
 type ProviderDelta struct {
 	Text  string
 	Calls []c.ToolCall
@@ -49,6 +52,7 @@ type Tool struct {
 	lifetime    context.Context
 }
 type PluginDefinition struct {
+	Optional bool
 	Name     string
 	Kind     string
 	Requires []string
@@ -58,6 +62,7 @@ type pluginEntry struct {
 	definition PluginDefinition
 	fiber      *cordis.Fiber
 	enabled    bool
+	failed     bool
 }
 type providerEntry struct {
 	provider Provider
@@ -84,6 +89,13 @@ func (r *Runtime) Mount(definition PluginDefinition, enabled bool) error {
 func (r *Runtime) SetPlugin(name string, enabled bool) error {
 	r.pluginMu.Lock()
 	defer r.pluginMu.Unlock()
+	return r.setPluginLocked(name, enabled)
+}
+
+// vx-bot/NOTE: Persist intent before changing runtime state; failed activation remains visible and retryable.
+func (r *Runtime) ConfigurePlugin(ctx context.Context, name string, enabled bool) error {
+	r.pluginMu.Lock()
+	defer r.pluginMu.Unlock()
 	r.mu.RLock()
 	entry := r.plugins[name]
 	closed := r.closed
@@ -94,7 +106,28 @@ func (r *Runtime) SetPlugin(name string, enabled bool) error {
 	if entry == nil {
 		return ErrNotFound
 	}
-	if entry.enabled == enabled {
+	if err := r.store.SetSetting(ctx, "system", "plugin."+name, fmt.Sprint(enabled)); err != nil {
+		return fmt.Errorf("%w: %w", errPluginPersistence, err)
+	}
+	// vx-bot/NOTE: Activation errors are represented by PluginInfo, rather than reporting a committed setting as unsaved.
+	if err := r.setPluginLocked(name, enabled); err != nil && !errors.Is(err, errPluginActivation) {
+		return err
+	}
+	return nil
+}
+
+func (r *Runtime) setPluginLocked(name string, enabled bool) error {
+	r.mu.RLock()
+	entry := r.plugins[name]
+	closed := r.closed
+	r.mu.RUnlock()
+	if closed {
+		return errors.New("runtime is shutting down")
+	}
+	if entry == nil {
+		return ErrNotFound
+	}
+	if entry.enabled == enabled && !entry.failed {
 		return nil
 	}
 	if !enabled {
@@ -103,6 +136,7 @@ func (r *Runtime) SetPlugin(name string, enabled bool) error {
 		}
 		r.mu.Lock()
 		entry.enabled = false
+		entry.failed = false
 		entry.fiber = nil
 		r.mu.Unlock()
 		return nil
@@ -113,9 +147,16 @@ func (r *Runtime) SetPlugin(name string, enabled bool) error {
 		if fiber != nil {
 			fiber.Dispose()
 		}
-		return err
+		r.mu.Lock()
+		entry.enabled = true
+		entry.failed = true
+		entry.fiber = nil
+		r.mu.Unlock()
+		r.options.Logger.Error("plugin activation failed", "plugin", name, "error", err)
+		return fmt.Errorf("%w: %w", errPluginActivation, err)
 	}
 	r.mu.Lock()
+	entry.failed = false
 	entry.fiber = fiber
 	entry.enabled = true
 	r.mu.Unlock()
@@ -134,7 +175,12 @@ func (r *Runtime) Plugins() []c.PluginInfo {
 		if requires == nil {
 			requires = []string{}
 		}
-		items = append(items, c.PluginInfo{Name: entry.definition.Name, Kind: entry.definition.Kind, Enabled: entry.enabled, Status: status, Dependencies: requires})
+		problem := ""
+		if entry.failed {
+			status = "failed"
+			problem = "Activation failed. Check the server configuration and retry."
+		}
+		items = append(items, c.PluginInfo{Name: entry.definition.Name, Kind: entry.definition.Kind, Enabled: entry.enabled, Required: !entry.definition.Optional, Status: status, Error: problem, Dependencies: requires})
 	}
 	sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
 	return items

@@ -114,6 +114,10 @@ func generate() (map[string][]byte, error) {
 	add("/runs/{id}/events", "get", "", "StreamEvent")
 	add("/runs/{id}/cancel", "post", "", "APIError")
 	add("/plugins/{name}", "patch", "PluginUpdate", "PluginInfo")
+	pluginResponses := paths["/plugins/{name}"].(map[string]any)["patch"].(map[string]any)["responses"].(map[string]any)
+	pluginResponses["200"] = map[string]any{"description": "Saved desired enablement and current plugin states; failed activation is represented by status and error", "content": map[string]any{"application/json": map[string]any{"schema": map[string]any{"type": "array", "items": map[string]any{"$ref": "#/components/schemas/PluginInfo"}}}}}
+	pluginResponses["503"] = map[string]any{"description": "Setting persistence is unconfirmed; runtime was not changed. Refresh status before retrying.", "content": map[string]any{"application/json": map[string]any{"schema": map[string]any{"$ref": "#/components/schemas/APIError"}}}}
+
 	add("/memory", "post", "MemoryRequest", "Memory")
 	add("/memory/{id}", "delete", "", "APIError")
 	add("/audio/speech", "post", "SpeechRequest", "APIError")

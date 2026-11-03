@@ -138,7 +138,10 @@ func (config Config) Mount(runtime *Runtime) error {
 			}
 		}
 		if err := runtime.Mount(definition, enabled); err != nil {
-			return err
+			if !definition.Optional || !errors.Is(err, errPluginActivation) {
+				return fmt.Errorf("required plugin %s: %w", definition.Name, err)
+			}
+			runtime.options.Logger.Warn("optional plugin unavailable", "plugin", definition.Name)
 		}
 	}
 	return nil

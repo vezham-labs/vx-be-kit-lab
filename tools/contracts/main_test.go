@@ -44,6 +44,14 @@ func TestGeneratedOpenAPIYAML(t *testing.T) {
 		t.Fatal("YAML schema differs from generated JSON Schema")
 	}
 	paths := document["paths"].(map[string]any)
+	pluginResponses := paths["/plugins/{name}"].(map[string]any)["patch"].(map[string]any)["responses"].(map[string]any)
+	if _, exists := pluginResponses["503"]; !exists {
+		t.Fatal("missing plugin persistence failure response")
+	}
+	pluginSchema := pluginResponses["200"].(map[string]any)["content"].(map[string]any)["application/json"].(map[string]any)["schema"].(map[string]any)
+	if pluginSchema["type"] != "array" {
+		t.Fatal("plugin update must return a plugin list")
+	}
 	chat := paths["/chat"].(map[string]any)["post"].(map[string]any)
 	response := chat["responses"].(map[string]any)["200"].(map[string]any)
 	if _, exists := response["content"].(map[string]any)["text/event-stream"]; !exists {

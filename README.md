@@ -139,3 +139,17 @@ The local suite uses temporary databases, a signed test identity provider, a rea
 ## Local product state
 
 Tamizhi uses `.vezham/tamizhi/`, relative to the process working directory. Explicit SQLite development defaults to `.vezham/tamizhi/data/tamizhi.sqlite`; the local credential-encryption key defaults to `.vezham/tamizhi/credential-key`. Neon remains the production database. Configured database paths, `CredentialKeyFile` and the server-only `TAMIZHI_ENCRYPTION_KEY` retain their existing override behavior.
+
+## Upstream review history
+
+The [Tamizhi upstream sync handbook](vx/handbooks/tamizhi-upstream-sync.md)
+records DSH snapshots, decisions, baseline commits, verification and deferred
+Search/Fetch and Team work. Keep it updated with backend and frontend commit IDs
+when an upstream review is implemented.
+
+MCP integrations are optional by default. Set `required: true` on an MCP config
+entry to make activation mandatory at startup. Other compiled plugins remain
+required. Optional activation failures are logged and exposed as failed plugins
+without blocking the API. Invalid registrations still stop startup. Admins can
+retry failed activation in AI settings. Plugin enablement is saved before runtime
+application; saved intent and actual runtime status are reported separately.
