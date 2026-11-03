@@ -14,6 +14,7 @@ import (
 
 	"github.com/google/jsonschema-go/jsonschema"
 	c "github.com/vezham-labs/vx-be-kit-lab/packages/tamizhi/contracts"
+	"go.yaml.in/yaml/v4"
 )
 
 var types = []any{c.Task{}, c.ToolCall{}, c.Attachment{}, c.Message{}, c.ActivityAppearance{}, c.RunRequest{}, c.ApprovalDecision{}, c.Usage{}, c.StreamEvent{}, c.ModelInfo{}, c.Conversation{}, c.ConversationPage{}, c.RenameRequest{}, c.FeedbackRequest{}, c.TasksRequest{}, c.BranchRequest{}, c.Checkpoint{}, c.CheckpointRequest{}, c.RunInfo{}, c.PluginInfo{}, c.PluginUpdate{}, c.Principal{}, c.SessionInfo{}, c.AuthSession{}, c.LoginMethod{}, c.Capabilities{}, c.Memory{}, c.MemoryRequest{}, c.Transcript{}, c.SpeechRequest{}, c.ClientAction{}, c.APIError{}, c.ProviderSettings{}, c.ProviderKeyRequest{}, c.ProviderOAuthRequest{}, c.ProviderAuthorization{}}
@@ -137,11 +138,27 @@ func generate() (map[string][]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	// vx-bot/NOTE: JSON Schema structs use JSON tags; normalize them before YAML encoding.
+	var normalized map[string]any
+	if err := json.Unmarshal(raw, &normalized); err != nil {
+		return nil, err
+	}
+	var openAPI bytes.Buffer
+	openAPI.WriteString("# vx-bot/NOTE: Generated from Go contracts. Regenerate with scripts/sync-tamizhi-contracts.\n")
+	encoder := yaml.NewEncoder(&openAPI)
+	encoder.SetIndent(2)
+	encoder.CompactSeqIndent()
+	if err := encoder.Encode(normalized); err != nil {
+		return nil, err
+	}
+	if err := encoder.Close(); err != nil {
+		return nil, err
+	}
 	schemaBytes, err := json.MarshalIndent(schemas, "", "  ")
 	if err != nil {
 		return nil, err
 	}
-	return map[string][]byte{"api.ts": []byte(strings.TrimRight(text.String(), "\n") + "\n"), "schemas.json": append(schemaBytes, '\n'), "openapi.json": append(raw, '\n')}, nil
+	return map[string][]byte{"api.ts": []byte(strings.TrimRight(text.String(), "\n") + "\n"), "schemas.json": append(schemaBytes, '\n'), "openapi.yaml": openAPI.Bytes()}, nil
 }
 func main() {
 	out := flag.String("output", "api/tamizhi", "output directory")

@@ -214,3 +214,7 @@ firebase-debug.*.log*
 .neon
 .env.local
 config/tamizhi.json
+
+# vx-bot/NOTE: Go-generated contract references are checked byte-for-byte by the contract generator.
+api/tamizhi/openapi.yaml
+api/tamizhi/schemas.json

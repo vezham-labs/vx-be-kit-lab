@@ -8,28 +8,10 @@ output="$contracts/src/lib/generated"
 if [ "${2:-}" = "--check" ]; then
   ./scripts/go run ./tools/contracts -check
   cmp api/tamizhi/api.ts "$output/api.ts"
+  cmp api/tamizhi/openapi.yaml "$contracts/openapi.yaml"
 else
   ./scripts/go run ./tools/contracts
   mkdir -p "$output"
   cp api/tamizhi/api.ts "$output/api.ts"
+  cp api/tamizhi/openapi.yaml "$contracts/openapi.yaml"
 fi
-
-node --input-type=module - "$contracts/openapi.yaml" "${2:-}" <<'JS'
-import { readFileSync, writeFileSync } from 'node:fs'
-import { format, resolveConfig } from 'prettier'
-import { stringify } from 'yaml'
-
-const [output, mode] = process.argv.slice(2)
-const document = JSON.parse(readFileSync('api/tamizhi/openapi.json', 'utf8'))
-const content = await format(
-  '# vx-bot/NOTE: Generated from Go contracts. Regenerate with scripts/sync-tamizhi-contracts.\n' + stringify(document),
-  { ...await resolveConfig(output), parser: 'yaml' }
-)
-if (mode === '--check') {
-  if (readFileSync(output, 'utf8') !== content) {
-    throw new Error(`Contract reference drift: ${output}`)
-  }
-} else {
-  writeFileSync(output, content)
-}
-JS

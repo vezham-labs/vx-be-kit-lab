@@ -17,16 +17,26 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "scripts/go test -race -count=1 ./packages/tamizhi/contracts/..."
+        "command": "scripts/go test -race -count=1 ./packages/tamizhi/contracts/... ./tools/contracts/..."
       },
-      "inputs": ["default", "^default", "goGlobals"]
+      "inputs": [
+        "default",
+        "^default",
+        "goGlobals",
+        "{workspaceRoot}/tools/contracts/**/*.go"
+      ]
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "scripts/go vet ./packages/tamizhi/contracts/..."
+        "command": "scripts/go vet ./packages/tamizhi/contracts/... ./tools/contracts/..."
       },
-      "inputs": ["default", "^default", "goGlobals"]
+      "inputs": [
+        "default",
+        "^default",
+        "goGlobals",
+        "{workspaceRoot}/tools/contracts/**/*.go"
+      ]
     },
     "generate": {
       "executor": "nx:run-commands",

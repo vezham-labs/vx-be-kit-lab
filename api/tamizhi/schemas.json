@@ -9,7 +9,10 @@
         "type": "string"
       }
     },
-    "required": ["code", "message"],
+    "required": [
+      "code",
+      "message"
+    ],
     "additionalProperties": false
   },
   "ActivityAppearance": {
@@ -37,7 +40,11 @@
         "type": "boolean"
       }
     },
-    "required": ["runId", "callId", "approved"],
+    "required": [
+      "runId",
+      "callId",
+      "approved"
+    ],
     "additionalProperties": false
   },
   "Attachment": {
@@ -59,7 +66,12 @@
         "type": "string"
       }
     },
-    "required": ["id", "name", "mimeType", "size"],
+    "required": [
+      "id",
+      "name",
+      "mimeType",
+      "size"
+    ],
     "additionalProperties": false
   },
   "AuthSession": {
@@ -69,7 +81,10 @@
         "type": "boolean"
       },
       "methods": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -80,12 +95,18 @@
               "type": "string"
             }
           },
-          "required": ["id", "name"],
+          "required": [
+            "id",
+            "name"
+          ],
           "additionalProperties": false
         }
       },
       "user": {
-        "type": ["null", "object"],
+        "type": [
+          "null",
+          "object"
+        ],
         "properties": {
           "id": {
             "type": "string"
@@ -94,20 +115,29 @@
             "type": "string"
           },
           "roles": {
-            "type": ["null", "array"],
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
               "type": "string"
             }
           }
         },
-        "required": ["id"],
+        "required": [
+          "id"
+        ],
         "additionalProperties": false
       },
       "loginEnabled": {
         "type": "boolean"
       }
     },
-    "required": ["canLogout", "methods", "loginEnabled"],
+    "required": [
+      "canLogout",
+      "methods",
+      "loginEnabled"
+    ],
     "additionalProperties": false
   },
   "BranchRequest": {
@@ -120,7 +150,9 @@
         "type": "string"
       }
     },
-    "required": ["messageId"],
+    "required": [
+      "messageId"
+    ],
     "additionalProperties": false
   },
   "Capabilities": {
@@ -191,7 +223,10 @@
         "type": "string"
       },
       "messages": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -205,7 +240,10 @@
               "type": "string"
             },
             "attachments": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -225,12 +263,20 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "name", "mimeType", "size"],
+                "required": [
+                  "id",
+                  "name",
+                  "mimeType",
+                  "size"
+                ],
                 "additionalProperties": false
               }
             },
             "toolCalls": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -247,7 +293,11 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "name", "arguments"],
+                "required": [
+                  "id",
+                  "name",
+                  "arguments"
+                ],
                 "additionalProperties": false
               }
             },
@@ -258,7 +308,10 @@
               "type": "string"
             },
             "tasks": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -269,7 +322,10 @@
                     "type": "boolean"
                   }
                 },
-                "required": ["label", "done"],
+                "required": [
+                  "label",
+                  "done"
+                ],
                 "additionalProperties": false
               }
             },
@@ -286,7 +342,10 @@
               "type": "string"
             }
           },
-          "required": ["role", "content"],
+          "required": [
+            "role",
+            "content"
+          ],
           "additionalProperties": false
         }
       },
@@ -294,7 +353,13 @@
         "type": "integer"
       }
     },
-    "required": ["id", "conversationId", "label", "messages", "createdAt"],
+    "required": [
+      "id",
+      "conversationId",
+      "label",
+      "messages",
+      "createdAt"
+    ],
     "additionalProperties": false
   },
   "CheckpointRequest": {
@@ -304,7 +369,9 @@
         "type": "string"
       }
     },
-    "required": ["label"],
+    "required": [
+      "label"
+    ],
     "additionalProperties": false
   },
   "ClientAction": {
@@ -320,7 +387,9 @@
         "type": "string"
       }
     },
-    "required": ["name"],
+    "required": [
+      "name"
+    ],
     "additionalProperties": false
   },
   "Conversation": {
@@ -333,7 +402,10 @@
         "type": "string"
       },
       "messages": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -347,7 +419,10 @@
               "type": "string"
             },
             "attachments": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -367,12 +442,20 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "name", "mimeType", "size"],
+                "required": [
+                  "id",
+                  "name",
+                  "mimeType",
+                  "size"
+                ],
                 "additionalProperties": false
               }
             },
             "toolCalls": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -389,7 +472,11 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "name", "arguments"],
+                "required": [
+                  "id",
+                  "name",
+                  "arguments"
+                ],
                 "additionalProperties": false
               }
             },
@@ -400,7 +487,10 @@
               "type": "string"
             },
             "tasks": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -411,7 +501,10 @@
                     "type": "boolean"
                   }
                 },
-                "required": ["label", "done"],
+                "required": [
+                  "label",
+                  "done"
+                ],
                 "additionalProperties": false
               }
             },
@@ -428,7 +521,10 @@
               "type": "string"
             }
           },
-          "required": ["role", "content"],
+          "required": [
+            "role",
+            "content"
+          ],
           "additionalProperties": false
         }
       },
@@ -448,14 +544,23 @@
         "type": "string"
       }
     },
-    "required": ["id", "title", "messages", "updatedAt", "version"],
+    "required": [
+      "id",
+      "title",
+      "messages",
+      "updatedAt",
+      "version"
+    ],
     "additionalProperties": false
   },
   "ConversationPage": {
     "type": "object",
     "properties": {
       "items": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -466,7 +571,10 @@
               "type": "string"
             },
             "messages": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -480,7 +588,10 @@
                     "type": "string"
                   },
                   "attachments": {
-                    "type": ["null", "array"],
+                    "type": [
+                      "null",
+                      "array"
+                    ],
                     "items": {
                       "type": "object",
                       "properties": {
@@ -500,12 +611,20 @@
                           "type": "string"
                         }
                       },
-                      "required": ["id", "name", "mimeType", "size"],
+                      "required": [
+                        "id",
+                        "name",
+                        "mimeType",
+                        "size"
+                      ],
                       "additionalProperties": false
                     }
                   },
                   "toolCalls": {
-                    "type": ["null", "array"],
+                    "type": [
+                      "null",
+                      "array"
+                    ],
                     "items": {
                       "type": "object",
                       "properties": {
@@ -522,7 +641,11 @@
                           "type": "string"
                         }
                       },
-                      "required": ["id", "name", "arguments"],
+                      "required": [
+                        "id",
+                        "name",
+                        "arguments"
+                      ],
                       "additionalProperties": false
                     }
                   },
@@ -533,7 +656,10 @@
                     "type": "string"
                   },
                   "tasks": {
-                    "type": ["null", "array"],
+                    "type": [
+                      "null",
+                      "array"
+                    ],
                     "items": {
                       "type": "object",
                       "properties": {
@@ -544,7 +670,10 @@
                           "type": "boolean"
                         }
                       },
-                      "required": ["label", "done"],
+                      "required": [
+                        "label",
+                        "done"
+                      ],
                       "additionalProperties": false
                     }
                   },
@@ -561,7 +690,10 @@
                     "type": "string"
                   }
                 },
-                "required": ["role", "content"],
+                "required": [
+                  "role",
+                  "content"
+                ],
                 "additionalProperties": false
               }
             },
@@ -581,7 +713,13 @@
               "type": "string"
             }
           },
-          "required": ["id", "title", "messages", "updatedAt", "version"],
+          "required": [
+            "id",
+            "title",
+            "messages",
+            "updatedAt",
+            "version"
+          ],
           "additionalProperties": false
         }
       },
@@ -589,7 +727,9 @@
         "type": "string"
       }
     },
-    "required": ["items"],
+    "required": [
+      "items"
+    ],
     "additionalProperties": false
   },
   "FeedbackRequest": {
@@ -599,7 +739,9 @@
         "type": "string"
       }
     },
-    "required": ["rating"],
+    "required": [
+      "rating"
+    ],
     "additionalProperties": false
   },
   "LoginMethod": {
@@ -612,7 +754,10 @@
         "type": "string"
       }
     },
-    "required": ["id", "name"],
+    "required": [
+      "id",
+      "name"
+    ],
     "additionalProperties": false
   },
   "Memory": {
@@ -625,7 +770,10 @@
         "type": "string"
       },
       "tags": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "string"
         }
@@ -637,7 +785,11 @@
         "type": "integer"
       }
     },
-    "required": ["id", "text", "createdAt"],
+    "required": [
+      "id",
+      "text",
+      "createdAt"
+    ],
     "additionalProperties": false
   },
   "MemoryRequest": {
@@ -647,13 +799,18 @@
         "type": "string"
       },
       "tags": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "string"
         }
       }
     },
-    "required": ["text"],
+    "required": [
+      "text"
+    ],
     "additionalProperties": false
   },
   "Message": {
@@ -669,7 +826,10 @@
         "type": "string"
       },
       "attachments": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -689,12 +849,20 @@
               "type": "string"
             }
           },
-          "required": ["id", "name", "mimeType", "size"],
+          "required": [
+            "id",
+            "name",
+            "mimeType",
+            "size"
+          ],
           "additionalProperties": false
         }
       },
       "toolCalls": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -711,7 +879,11 @@
               "type": "string"
             }
           },
-          "required": ["id", "name", "arguments"],
+          "required": [
+            "id",
+            "name",
+            "arguments"
+          ],
           "additionalProperties": false
         }
       },
@@ -722,7 +894,10 @@
         "type": "string"
       },
       "tasks": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -733,7 +908,10 @@
               "type": "boolean"
             }
           },
-          "required": ["label", "done"],
+          "required": [
+            "label",
+            "done"
+          ],
           "additionalProperties": false
         }
       },
@@ -750,7 +928,10 @@
         "type": "string"
       }
     },
-    "required": ["role", "content"],
+    "required": [
+      "role",
+      "content"
+    ],
     "additionalProperties": false
   },
   "ModelInfo": {
@@ -766,7 +947,10 @@
         "type": "string"
       },
       "modalities": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "string"
         }
@@ -778,7 +962,11 @@
         "type": "boolean"
       }
     },
-    "required": ["id", "name", "provider"],
+    "required": [
+      "id",
+      "name",
+      "provider"
+    ],
     "additionalProperties": false
   },
   "PluginInfo": {
@@ -797,13 +985,22 @@
         "type": "string"
       },
       "dependencies": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "string"
         }
       }
     },
-    "required": ["name", "kind", "enabled", "status", "dependencies"],
+    "required": [
+      "name",
+      "kind",
+      "enabled",
+      "status",
+      "dependencies"
+    ],
     "additionalProperties": false
   },
   "PluginUpdate": {
@@ -813,7 +1010,9 @@
         "type": "boolean"
       }
     },
-    "required": ["enabled"],
+    "required": [
+      "enabled"
+    ],
     "additionalProperties": false
   },
   "Principal": {
@@ -826,13 +1025,18 @@
         "type": "string"
       },
       "roles": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "string"
         }
       }
     },
-    "required": ["id"],
+    "required": [
+      "id"
+    ],
     "additionalProperties": false
   },
   "ProviderAuthorization": {
@@ -842,7 +1046,9 @@
         "type": "string"
       }
     },
-    "required": ["url"],
+    "required": [
+      "url"
+    ],
     "additionalProperties": false
   },
   "ProviderKeyRequest": {
@@ -852,7 +1058,9 @@
         "type": "string"
       }
     },
-    "required": ["apiKey"],
+    "required": [
+      "apiKey"
+    ],
     "additionalProperties": false
   },
   "ProviderOAuthRequest": {
@@ -865,7 +1073,10 @@
         "type": "string"
       }
     },
-    "required": ["projectId", "returnTo"],
+    "required": [
+      "projectId",
+      "returnTo"
+    ],
     "additionalProperties": false
   },
   "ProviderSettings": {
@@ -890,7 +1101,10 @@
         "type": "boolean"
       },
       "models": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -904,7 +1118,10 @@
               "type": "string"
             },
             "modalities": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
@@ -916,7 +1133,11 @@
               "type": "boolean"
             }
           },
-          "required": ["id", "name", "provider"],
+          "required": [
+            "id",
+            "name",
+            "provider"
+          ],
           "additionalProperties": false
         }
       },
@@ -927,7 +1148,13 @@
         "type": "string"
       }
     },
-    "required": ["oauthAvailable", "id", "name", "connected", "models"],
+    "required": [
+      "oauthAvailable",
+      "id",
+      "name",
+      "connected",
+      "models"
+    ],
     "additionalProperties": false
   },
   "RenameRequest": {
@@ -937,7 +1164,9 @@
         "type": "string"
       }
     },
-    "required": ["title"],
+    "required": [
+      "title"
+    ],
     "additionalProperties": false
   },
   "RunInfo": {
@@ -971,7 +1200,11 @@
             "type": "integer"
           }
         },
-        "required": ["inputTokens", "outputTokens", "totalTokens"],
+        "required": [
+          "inputTokens",
+          "outputTokens",
+          "totalTokens"
+        ],
         "additionalProperties": false
       },
       "createdAt": {
@@ -1014,7 +1247,10 @@
         "type": "string"
       },
       "messages": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -1028,7 +1264,10 @@
               "type": "string"
             },
             "attachments": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -1048,12 +1287,20 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "name", "mimeType", "size"],
+                "required": [
+                  "id",
+                  "name",
+                  "mimeType",
+                  "size"
+                ],
                 "additionalProperties": false
               }
             },
             "toolCalls": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -1070,7 +1317,11 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "name", "arguments"],
+                "required": [
+                  "id",
+                  "name",
+                  "arguments"
+                ],
                 "additionalProperties": false
               }
             },
@@ -1081,7 +1332,10 @@
               "type": "string"
             },
             "tasks": {
-              "type": ["null", "array"],
+              "type": [
+                "null",
+                "array"
+              ],
               "items": {
                 "type": "object",
                 "properties": {
@@ -1092,7 +1346,10 @@
                     "type": "boolean"
                   }
                 },
-                "required": ["label", "done"],
+                "required": [
+                  "label",
+                  "done"
+                ],
                 "additionalProperties": false
               }
             },
@@ -1109,7 +1366,10 @@
               "type": "string"
             }
           },
-          "required": ["role", "content"],
+          "required": [
+            "role",
+            "content"
+          ],
           "additionalProperties": false
         }
       },
@@ -1121,16 +1381,28 @@
       },
       "permission": {
         "type": "string",
-        "enum": ["ask", "safe", "full"]
+        "enum": [
+          "ask",
+          "safe",
+          "full"
+        ]
       },
       "title": {
         "type": "string"
       },
       "expectedVersion": {
-        "type": ["null", "integer"]
+        "type": [
+          "null",
+          "integer"
+        ]
       }
     },
-    "required": ["conversationId", "messages", "fast", "permission"],
+    "required": [
+      "conversationId",
+      "messages",
+      "fast",
+      "permission"
+    ],
     "additionalProperties": false
   },
   "SessionInfo": {
@@ -1146,13 +1418,18 @@
             "type": "string"
           },
           "roles": {
-            "type": ["null", "array"],
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
               "type": "string"
             }
           }
         },
-        "required": ["id"],
+        "required": [
+          "id"
+        ],
         "additionalProperties": false
       },
       "loginUrl": {
@@ -1162,7 +1439,9 @@
         "type": "integer"
       }
     },
-    "required": ["user"],
+    "required": [
+      "user"
+    ],
     "additionalProperties": false
   },
   "SpeechRequest": {
@@ -1175,7 +1454,9 @@
         "type": "string"
       }
     },
-    "required": ["text"],
+    "required": [
+      "text"
+    ],
     "additionalProperties": false
   },
   "StreamEvent": {
@@ -1217,7 +1498,10 @@
         "type": "string"
       },
       "usage": {
-        "type": ["null", "object"],
+        "type": [
+          "null",
+          "object"
+        ],
         "properties": {
           "inputTokens": {
             "type": "integer"
@@ -1229,11 +1513,20 @@
             "type": "integer"
           }
         },
-        "required": ["inputTokens", "outputTokens", "totalTokens"],
+        "required": [
+          "inputTokens",
+          "outputTokens",
+          "totalTokens"
+        ],
         "additionalProperties": false
       }
     },
-    "required": ["type", "runId", "conversationId", "sequence"],
+    "required": [
+      "type",
+      "runId",
+      "conversationId",
+      "sequence"
+    ],
     "additionalProperties": false
   },
   "Task": {
@@ -1246,14 +1539,20 @@
         "type": "boolean"
       }
     },
-    "required": ["label", "done"],
+    "required": [
+      "label",
+      "done"
+    ],
     "additionalProperties": false
   },
   "TasksRequest": {
     "type": "object",
     "properties": {
       "tasks": {
-        "type": ["null", "array"],
+        "type": [
+          "null",
+          "array"
+        ],
         "items": {
           "type": "object",
           "properties": {
@@ -1264,12 +1563,17 @@
               "type": "boolean"
             }
           },
-          "required": ["label", "done"],
+          "required": [
+            "label",
+            "done"
+          ],
           "additionalProperties": false
         }
       }
     },
-    "required": ["tasks"],
+    "required": [
+      "tasks"
+    ],
     "additionalProperties": false
   },
   "ToolCall": {
@@ -1288,7 +1592,11 @@
         "type": "string"
       }
     },
-    "required": ["id", "name", "arguments"],
+    "required": [
+      "id",
+      "name",
+      "arguments"
+    ],
     "additionalProperties": false
   },
   "Transcript": {
@@ -1298,7 +1606,9 @@
         "type": "string"
       }
     },
-    "required": ["text"],
+    "required": [
+      "text"
+    ],
     "additionalProperties": false
   },
   "Usage": {
@@ -1314,7 +1624,11 @@
         "type": "integer"
       }
     },
-    "required": ["inputTokens", "outputTokens", "totalTokens"],
+    "required": [
+      "inputTokens",
+      "outputTokens",
+      "totalTokens"
+    ],
     "additionalProperties": false
   }
 }
