@@ -111,7 +111,7 @@ scripts/sync-tamizhi-contracts /path/to/vx-fe-pkgs-timeline
 scripts/sync-tamizhi-contracts /path/to/vx-fe-pkgs-timeline --check
 ```
 
-Generated `api.ts`, `schemas.json` and `openapi.json` come from Go DTOs. The frontend keeps runtime Zod validation for requests, stored histories and stream events. Its client integration test starts the actual Go binary and a local model endpoint to verify both sides together.
+Generated backend `api.ts`, `schemas.json` and `openapi.json` come from Go DTOs. The sync script copies only `api.ts` into the frontend source and converts the OpenAPI document into `packages/tamizhi/contracts/openapi.yaml` as a generated repository reference. The frontend keeps runtime Zod validation for requests, stored histories and stream events. Its client integration test starts the actual Go binary and a local model endpoint to verify both sides together.
 
 Set the **public** frontend build variable `V_TAMIZHI_API_URL=https://api.example.com/api/tamizhi`; no SSR runtime or secret frontend variables are required. Both app modes consume `@vezham/tamizhi-client` and `@vezham/tamizhi-ui`. Control Center continues to own theming.
 

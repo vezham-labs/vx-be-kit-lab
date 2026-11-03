@@ -44,7 +44,7 @@ func ts(t reflect.Type) string {
 }
 func generate() (map[string][]byte, error) {
 	var text strings.Builder
-	text.WriteString("// Generated from Go contracts. Run the backend contracts:generate target.\nexport type PermissionMode = 'ask' | 'safe' | 'full'\n\n")
+	text.WriteString("// vx-bot/NOTE: Generated from Go contracts. Run the backend contracts:generate target.\nexport type PermissionMode = 'ask' | 'safe' | 'full'\n\n")
 	schemas := map[string]any{}
 	for _, value := range types {
 		t := reflect.TypeOf(value)
