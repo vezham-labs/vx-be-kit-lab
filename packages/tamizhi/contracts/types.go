@@ -267,6 +267,7 @@ func (p Principal) Admin() bool {
 
 // ProviderSettings never includes credential material in an API response.
 type ProviderSettings struct {
+	SearchEnabled      bool        `json:"searchEnabled"`
 	OAuthAvailable     bool        `json:"oauthAvailable"`
 	AuthMethod         string      `json:"authMethod,omitempty"`
 	ProjectID          string      `json:"projectId,omitempty"`
@@ -279,6 +280,10 @@ type ProviderSettings struct {
 }
 type ProviderKeyRequest struct {
 	APIKey string `json:"apiKey"`
+}
+
+type ProviderSearchRequest struct {
+	Enabled bool `json:"enabled"`
 }
 
 type ProviderOAuthRequest struct {

@@ -47,6 +47,7 @@ type pendingApproval struct {
 	decision chan bool
 }
 type Runtime struct {
+	web             *webState
 	ctx             context.Context
 	cancel          context.CancelFunc
 	root            *cordis.Context
@@ -370,6 +371,7 @@ func (r *Runtime) drive(ctx context.Context, principal c.Principal, request c.Ru
 		}
 		finalCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
 		defer cancel()
+		r.cleanupWeb(principal.ID, run)
 		if ctx.Err() != nil {
 			status = "canceled"
 		}
@@ -431,7 +433,7 @@ func (r *Runtime) drive(ctx context.Context, principal c.Principal, request c.Ru
 		}
 		assistant := c.Message{ID: newID(), Role: "assistant", OutfitLocked: appearance.OutfitLocked, ProfileID: appearance.ProfileID, Persona: appearance.Persona, Outfit: appearance.Outfit}
 		var calls []c.ToolCall
-		err = entry.provider.Stream(ctx, ProviderInput{Model: model.ID, Messages: withPersona(messages, r.options.SystemPrompt, appearance.Persona), Tools: r.toolList(depth), Fast: request.Fast}, func(delta ProviderDelta) error {
+		err = entry.provider.Stream(ctx, ProviderInput{Model: model.ID, Messages: withPersona(messages, r.researchPrompt(messages), appearance.Persona), Tools: r.toolList(depth), Fast: request.Fast}, func(delta ProviderDelta) error {
 			if len(assistant.Content)+len(delta.Text) > 100000 {
 				return errors.New("response exceeds output budget")
 			}

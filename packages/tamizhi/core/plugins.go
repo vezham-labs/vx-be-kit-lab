@@ -12,6 +12,8 @@ import (
 	c "github.com/vezham-labs/vx-be-kit-lab/packages/tamizhi/contracts"
 )
 
+var ErrModelUnavailable = errors.New("no provider is configured for the selected model")
+
 var errPluginActivation = errors.New("plugin activation failed")
 var errPluginPersistence = errors.New("plugin setting persistence failed")
 
@@ -273,7 +275,7 @@ func (r *Runtime) resolveProvider(id string, fast bool) (providerEntry, c.ModelI
 			}
 		}
 	}
-	return providerEntry{}, c.ModelInfo{}, errors.New("no provider is configured for the selected model")
+	return providerEntry{}, c.ModelInfo{}, ErrModelUnavailable
 }
 func (r *Runtime) toolList(depth int) []Tool {
 	r.mu.RLock()

@@ -88,6 +88,9 @@ func ReadConfig(path string) (Config, error) {
 			config.DatabaseURLEnv = "DATABASE_URL"
 		}
 	}
+	if config.DefaultModel == "" {
+		config.DefaultModel = LeoModelID
+	}
 	if config.Profile == "" {
 		config.Profile = "assistant"
 	}
@@ -111,7 +114,7 @@ func (config Config) NewAuth(ctx context.Context, store *Store) (*Auth, error) {
 	return NewAuth(ctx, store, tokens, OIDCOptions{Connections: config.Auth.Connections, Issuer: config.Auth.Issuer, ClientID: config.Auth.ClientID, ClientSecret: os.Getenv(config.Auth.ClientSecretEnv), RedirectURL: config.Auth.RedirectURL, FrontendURL: config.Auth.FrontendURL, ReturnOrigins: config.Origins, SecureCookies: config.Auth.SecureCookies, AdminSubjects: config.Auth.AdminSubjects})
 }
 func (config Config) Mount(runtime *Runtime) error {
-	definitions := []PluginDefinition{MemoryPlugin(), NavigationPlugin(), SubagentPlugin(), HTTPFetchPlugin()}
+	definitions := []PluginDefinition{LeoPlugin(), MemoryPlugin(), NavigationPlugin(), SubagentPlugin(), HTTPFetchPlugin(), WebPlugin(WebOptions{})}
 	if config.Profile == "workspace" && len(config.WorkspaceRoots) > 0 {
 		definitions = append(definitions, WorkspacePlugin(config.WorkspaceRoots))
 	}
@@ -128,7 +131,7 @@ func (config Config) Mount(runtime *Runtime) error {
 		definitions = append(definitions, MCPPlugin(entry))
 	}
 	for _, definition := range definitions {
-		enabled := true
+		enabled := definition.Name != "web"
 		if configured, ok := config.Plugins[definition.Name]; ok {
 			enabled = configured
 		}

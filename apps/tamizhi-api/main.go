@@ -4,75 +4,34 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"log/slog"
-	"net/http"
+	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
-
-	core "github.com/vezham-labs/vx-be-kit-lab/packages/tamizhi/core"
 )
 
 func main() {
-	if err := run(); err != nil {
-		slog.Error("Tamizhi stopped", "error", err)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	if err := command(ctx, os.Args[1:], os.Stdin, os.Stdout, os.Stderr); err != nil && !errors.Is(err, flag.ErrHelp) {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
-func run() error {
-	configPath := flag.String("config", "config/tamizhi.json", "server configuration path")
-	flag.Parse()
-	config, err := core.ReadConfig(*configPath)
-	if err != nil {
+func command(ctx context.Context, args []string, in io.Reader, out, errOut io.Writer) error {
+	if len(args) == 0 || args[0] == "help" || args[0] == "--help" {
+		_, err := fmt.Fprintln(out, "Tamizhi local companion\n\n  tamizhi serve [--origin https://your-app] [--data-dir path] [--listen 127.0.0.1:7331]\n  tamizhi chat [--model provider/model] [--permission ask|safe] [--json] your question\n  tamizhi status\n  tamizhi api --config path (configured hosted service)\n\nLocal state defaults to ~/.vezham/tamizhi. Run help on each command for flags.")
 		return err
 	}
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
-	dsn, err := config.DatabaseDSN()
-	if err != nil {
-		return err
+	switch args[0] {
+	case "serve":
+		return serveLocal(ctx, args[1:], in, out)
+	case "chat", "status":
+		return localRequest(ctx, args[0], args[1:], in, out, errOut)
+	case "api":
+		return runHosted(ctx, args[1:])
+	default:
+		return fmt.Errorf("unknown command %q; run tamizhi --help", args[0])
 	}
-	store, err := core.OpenStore(ctx, config.DatabaseDriver, dsn)
-	if err != nil {
-		return err
-	}
-	defer store.Close()
-	geminiOAuth, err := config.GeminiOAuthOptions()
-	if err != nil {
-		return err
-	}
-	runtime, err := core.NewRuntime(ctx, store, core.RuntimeOptions{GeminiOAuth: geminiOAuth, DefaultModel: config.DefaultModel, SystemPrompt: config.SystemPrompt, AllowFullAccess: config.AllowFullAccess})
-	if err != nil {
-		return err
-	}
-	defer runtime.Close()
-	if err = config.Mount(runtime); err != nil {
-		return err
-	}
-	auth, err := config.NewAuth(ctx, store)
-	if err != nil {
-		return err
-	}
-	if err = core.WatchPluginConfig(ctx, *configPath, runtime); err != nil {
-		return err
-	}
-	api := core.NewAPI(runtime, core.HTTPOptions{Origins: config.Origins, Authenticate: auth, AuthRoutes: auth, OIDC: config.Auth.Issuer != ""})
-	server := &http.Server{Addr: config.Address, Handler: api, ReadTimeout: 30 * time.Second, ReadHeaderTimeout: 10 * time.Second, IdleTimeout: time.Minute, MaxHeaderBytes: 1 << 16}
-	failed := make(chan error, 1)
-	go func() {
-		slog.Info("Tamizhi API listening", "address", config.Address)
-		failed <- server.ListenAndServe()
-	}()
-	select {
-	case err = <-failed:
-		if !errors.Is(err, http.ErrServerClosed) {
-			return err
-		}
-	case <-ctx.Done():
-	}
-	shutdown, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	runtime.Close()
-	return server.Shutdown(shutdown)
 }

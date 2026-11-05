@@ -17,7 +17,7 @@ import (
 	"go.yaml.in/yaml/v4"
 )
 
-var types = []any{c.Task{}, c.ToolCall{}, c.Attachment{}, c.Message{}, c.ActivityAppearance{}, c.RunRequest{}, c.ApprovalDecision{}, c.Usage{}, c.StreamEvent{}, c.ModelInfo{}, c.Conversation{}, c.ConversationPage{}, c.RenameRequest{}, c.FeedbackRequest{}, c.TasksRequest{}, c.BranchRequest{}, c.Checkpoint{}, c.CheckpointRequest{}, c.RunInfo{}, c.PluginInfo{}, c.PluginUpdate{}, c.Principal{}, c.SessionInfo{}, c.AuthSession{}, c.LoginMethod{}, c.Capabilities{}, c.Memory{}, c.MemoryRequest{}, c.Transcript{}, c.SpeechRequest{}, c.ClientAction{}, c.APIError{}, c.ProviderSettings{}, c.ProviderKeyRequest{}, c.ProviderOAuthRequest{}, c.ProviderAuthorization{}}
+var types = []any{c.CompanionConnection{}, c.CompanionConnectionRequest{}, c.CompanionConnectionResult{}, c.CompanionSession{}, c.WebDocument{}, c.WebSearchResult{}, c.WebSource{}, c.Task{}, c.ToolCall{}, c.Attachment{}, c.Message{}, c.ActivityAppearance{}, c.RunRequest{}, c.ApprovalDecision{}, c.Usage{}, c.StreamEvent{}, c.ModelInfo{}, c.Conversation{}, c.ConversationPage{}, c.RenameRequest{}, c.FeedbackRequest{}, c.TasksRequest{}, c.BranchRequest{}, c.Checkpoint{}, c.CheckpointRequest{}, c.RunInfo{}, c.PluginInfo{}, c.PluginUpdate{}, c.Principal{}, c.SessionInfo{}, c.AuthSession{}, c.LoginMethod{}, c.Capabilities{}, c.Memory{}, c.MemoryRequest{}, c.Transcript{}, c.SpeechRequest{}, c.ClientAction{}, c.APIError{}, c.ProviderSettings{}, c.ProviderKeyRequest{}, c.ProviderSearchRequest{}, c.ProviderOAuthRequest{}, c.ProviderAuthorization{}}
 
 func ts(t reflect.Type) string {
 	if t == reflect.TypeFor[c.PermissionMode]() {
@@ -95,9 +95,20 @@ func generate() (map[string][]byte, error) {
 	paths["/providers/gemini/oauth/callback"] = map[string]any{"get": map[string]any{"security": []any{}, "description": "One-use Google model authorization callback, bound to its HttpOnly state cookie and authenticated initiating owner.", "responses": map[string]any{"302": map[string]any{"description": "Return to the allowlisted frontend with connection status"}, "403": map[string]any{"description": "Invalid, expired or mismatched authorization state"}}}}
 
 	add("/providers/{id}", "put", "ProviderKeyRequest", "ProviderSettings")
+	add("/providers/{id}/search", "put", "ProviderSearchRequest", "ProviderSettings")
 	add("/providers/{id}", "delete", "", "APIError")
 	add("/session", "get", "", "SessionInfo")
 	add("/auth/session", "get", "", "AuthSession")
+	for _, route := range []struct{ path, input, output string }{{"/auth/connect", "", "CompanionConnection"}, {"/auth/connect/poll", "CompanionConnectionRequest", "CompanionConnectionResult"}, {"/auth/connect/cancel", "CompanionConnectionRequest", "APIError"}} {
+		add(route.path, "post", route.input, route.output)
+		operation := paths[route.path].(map[string]any)["post"].(map[string]any)
+		operation["security"] = []any{}
+		if route.path == "/auth/connect/cancel" {
+			responses := operation["responses"].(map[string]any)
+			delete(responses, "200")
+			responses["204"] = map[string]any{"description": "Connection request cancelled"}
+		}
+	}
 	paths["/auth/session"].(map[string]any)["get"].(map[string]any)["security"] = []any{}
 	add("/capabilities", "get", "", "Capabilities")
 	add("/conversations", "get", "", "ConversationPage")

@@ -21,10 +21,11 @@ type AuthFunc func(*http.Request) (c.Principal, error)
 func (f AuthFunc) Authenticate(r *http.Request) (c.Principal, error) { return f(r) }
 
 type HTTPOptions struct {
-	Origins      []string
-	Authenticate Authenticator
-	AuthRoutes   http.Handler
-	OIDC         bool
+	Origins       []string
+	OriginAllowed func(*http.Request) bool
+	Authenticate  Authenticator
+	AuthRoutes    http.Handler
+	OIDC          bool
 }
 type API struct {
 	Runtime *Runtime
@@ -53,6 +54,7 @@ func NewAPI(runtime *Runtime, options HTTPOptions) *API {
 	a.mux.HandleFunc("POST /api/tamizhi/providers/gemini/oauth", a.startGeminiOAuth)
 	a.mux.HandleFunc("GET /api/tamizhi/providers", a.providerSettings)
 	a.mux.HandleFunc("PUT /api/tamizhi/providers/{id}", a.saveProviderKey)
+	a.mux.HandleFunc("PUT /api/tamizhi/providers/{id}/search", a.providerSearch)
 	a.mux.HandleFunc("DELETE /api/tamizhi/providers/{id}", a.deleteProviderKey)
 	a.mux.HandleFunc("POST /api/tamizhi/chat", a.chat)
 	a.mux.HandleFunc("GET /api/tamizhi/runs/{id}", a.run)
@@ -97,6 +99,9 @@ func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				allowed = true
 				break
 			}
+		}
+		if a.Options.OriginAllowed != nil {
+			allowed = a.Options.OriginAllowed(r)
 		}
 		if !allowed {
 			apiError(w, ErrForbidden)
@@ -146,6 +151,10 @@ func apiError(w http.ResponseWriter, err error) {
 	code := "invalid_request"
 	message := "The request could not be processed"
 	switch {
+	case errors.Is(err, ErrModelUnavailable):
+		status = http.StatusServiceUnavailable
+		code = "model_unavailable"
+		message = "No AI model is available. Open AI settings to connect a provider, then choose a model."
 	case errors.Is(err, ErrNotFound):
 		status = 404
 		code = "not_found"
@@ -639,4 +648,18 @@ func (a *API) deleteProviderKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(204)
+}
+
+func (a *API) providerSearch(w http.ResponseWriter, r *http.Request) {
+	var body c.ProviderSearchRequest
+	if !decode(w, r, &body) {
+		return
+	}
+	p, _ := principal(r)
+	settings, err := a.Runtime.SetProviderSearch(r.Context(), p, r.PathValue("id"), body.Enabled)
+	if err != nil {
+		apiError(w, err)
+		return
+	}
+	respond(w, 200, settings)
 }

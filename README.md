@@ -1,6 +1,80 @@
 # Vezham backend kit · Tamizhi
 
-Tamizhi runs as a separate Go API. Standalone and embedded React applications remain static/prerendered clients. Provider credentials, agent tools, authentication and durable conversation state stay on the backend.
+Tamizhi runs as an independent Go companion with `serve`, `chat`, and `status` commands, plus an explicitly configured hosted API mode. Standalone and embedded React applications remain static/prerendered clients. Provider credentials, agent tools, authentication and durable conversation state stay on the backend.
+
+## Local companion POC
+
+```sh
+pnpm exec nx run tamizhi-api:build
+./dist/tamizhi serve
+```
+
+The local service listens on `127.0.0.1:7331`. In standalone or embed, open
+**Connect companion** and click **Connect**. The browser supplies its actual
+origin; an unrecognized origin appears in the running CLI with a verification
+code. Compare the code and origin with the UI, then enter `y` to approve and
+remember it, or reject with `n`/Enter. With no terminal input, requests are rejected.
+Approved origins are saved in owner-only `~/.vezham/tamizhi/allowed-origins.json`
+(or the selected `--data-dir`). `--origin` is optional preapproval and is saved
+there too. The allowlist supports up to 32 origins.
+
+Browser sessions stay in memory. After reload or companion restart, click
+**Connect** again; an approved origin does not need another terminal prompt.
+Then use **AI settings** beside the connection control to configure providers.
+Hosted UI origins need HTTPS and may require browser local-network permission.
+HTTP `*.vezham.local` development apps use the shared Vite preset's local relay;
+restart the frontend dev server after its configuration changes. `http://localhost`
+connects directly. Connections use terminal approval for new origins; no manual
+pairing-code interface is required.
+
+```sh
+./dist/tamizhi status
+./dist/tamizhi chat --permission safe 'What is the latest React version?'
+./dist/tamizhi chat --permission safe --json 'What is the latest React version?'
+```
+
+Local mode uses owner-only state under `~/.vezham/tamizhi/`, SQLite conversations,
+and encrypted provider keys. It does not require Neon, OIDC, Node, an extension,
+or a hosted Tamizhi service at runtime. Go owns the existing agent loop; a
+TanStack AI connection adapter consumes structured HTTP/SSE events in the UI.
+The web plugin uses opt-in DeepSeek Search and retrieves public server-rendered pages using bounded search/open/read
+tools, source tracking and the existing DNS-pinned network client. It does not
+render JavaScript, inherit browser sessions or bypass CAPTCHA. Leo is the built-in default and requires no model-provider key. Optional BYOK
+models remain available for broader language-model reasoning.
+
+The existing configured hosted API is `./dist/tamizhi api --config ...`; its
+OIDC, provider OAuth and Neon settings below remain available independently.
+
+## Leo: built-in tool workflows
+
+A fresh companion advertises `leo/default` (**Leo**) without provider keys. Leo
+runs through the existing provider plugin and agent loop, with the same owner
+checks, approvals, cancellation, budgets and durable SSE as BYOK models. Auto
+selects Leo by default. Explicit BYOK selections continue to use that provider.
+
+Use plain language such as “Leo movie”, “What is the latest React version?”,
+“Remember my launch is Friday”, or “Show my notes about the launch”. Conversational
+prefixes such as “please” and “can you” are accepted. Slash commands are optional
+shortcuts: `hi`, `/help`, `/tools`, `/search latest React version`,
+`/read https://react.dev/versions`, `/remember my launch is Friday`, and
+`/recall launch`. `search for ...`, `look up ...`, and `read https://...` are
+also supported. `/tool name {"argument":"value"}` invokes an installed skill
+or MCP tool using its declared schema. Web commands require the `web` plugin;
+local companion mode enables it. Other tools still need their configured
+resources or service connections.
+
+Leo does not use a language model. It routes supported requests through fixed
+workflows, quotes successfully read web sources with citations, and formats
+actual tool results. Unsupported/ambiguous requests ask for clarification.
+It never treats retrieved prose as workflow instructions. Plain public-topic lookups such as “Leo movie” and informational questions use
+web research. Recognized private/app requests and action requests ask for
+clarification instead of being inferred as public searches. Context compaction uses a
+bounded verbatim extract while retaining the full durable transcript.
+
+`LeoPlugin(customWorkflows...)` accepts additional trusted Go workflow planners
+when composing a runtime. Planners return steps/tool calls; they do not execute
+tools directly. Enablement remains managed as `provider.leo` through the existing
+plugin controls. This is Tamizhi's workflow engine, not a trained in-house LLM.
 
 ## Workspace
 
@@ -22,7 +96,8 @@ cp config/tamizhi.example.json config/tamizhi.json
 # Export DATABASE_URL with the Neon connection string (keep its TLS options).
 # Set a random TAMIZHI_DEV_TOKEN of at least 24 characters for local API access.
 # Users connect their own providers in Tuning → AI settings after signing in.
-pnpm nx run tamizhi-api:serve
+pnpm nx run tamizhi-api:build
+./dist/tamizhi api --config config/tamizhi.json
 ```
 
 Configuration contains environment variable names, never provider keys. The development bearer token authenticates a specific user; use OIDC browser sessions for deployed apps. Do not place a development token in a static frontend build.
@@ -153,3 +228,32 @@ required. Optional activation failures are logged and exposed as failed plugins
 without blocking the API. Invalid registrations still stop startup. Admins can
 retry failed activation in AI settings. Plugin enablement is saved before runtime
 application; saved intent and actual runtime status are reported separately.
+
+### Search source
+
+`web_search` uses DeepSeek Search with the initiating owner's encrypted DeepSeek
+API key. In AI settings, select DeepSeek, test and save a key, then explicitly
+turn on **Leo web search**. Connecting or replacing a key leaves search off.
+Disconnecting the provider removes search access. Search never uses another
+owner's key or falls back to a system key.
+
+One successful search costs $0.75 per 1,000 calls at the published November 2026
+rate. Check https://api-docs.deepseek.com/quick_start/pricing/ for current pricing.
+This integration requests six ranked results with `need_content: false`, then
+uses the existing public HTTPS open/read tools for page retrieval. It does not
+call DeepSeek Fetch or an LLM. Search results alone are not source evidence:
+only content read from source pages supports citations. Direct page reads may
+fail when sites require JavaScript, login or verification; these failures remain
+visible. There is no browser or Google HTML search fallback.
+
+The adapter does not automatically retry paid search calls. It preserves result
+order, removes duplicate/unsafe URLs, bounds responses to 512 KiB and uses a
+128-character Unicode-safe query limit. Credentials are sent only to the fixed
+DeepSeek HTTPS search endpoint; redirects are rejected. Missing keys, disabled
+search, authentication failures, insufficient balance and rate limits produce
+actionable errors without exposing provider response bodies or secrets.
+
+The authenticated `PUT /api/tamizhi/providers/{id}/search` endpoint accepts
+`{"enabled": true}` or `{"enabled": false}` and returns credential-free provider
+settings. It supports DeepSeek only. `WebOptions.Search` remains an injection
+point for other trusted adapters and deterministic tests.

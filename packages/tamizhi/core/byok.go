@@ -402,10 +402,24 @@ func (r *Runtime) ModelsFor(ctx context.Context, principal c.Principal) ([]c.Mod
 			}
 		}
 	}
-	sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
+	sort.Slice(items, func(i, j int) bool {
+		if (items[i].ID == LeoModelID) != (items[j].ID == LeoModelID) {
+			return items[i].ID == LeoModelID
+		}
+		return items[i].ID < items[j].ID
+	})
 	return items, nil
 }
 func (r *Runtime) resolveFor(ctx context.Context, principal c.Principal, id string, fast bool) (providerEntry, c.ModelInfo, error) {
+	if id == LeoModelID {
+		return r.resolveProvider(id, fast)
+	}
+	if (id == "" || id == "Auto") && (r.options.DefaultModel == "" || r.options.DefaultModel == LeoModelID) {
+		if entry, model, err := r.resolveProvider(LeoModelID, fast); err == nil {
+			return entry, model, nil
+		}
+	}
+
 	service, err := r.credentials()
 	if err != nil {
 		return providerEntry{}, c.ModelInfo{}, err
@@ -502,4 +516,39 @@ func (r *Runtime) audioFor(ctx context.Context, principal c.Principal) AudioProv
 		}
 	}
 	return r.audio()
+}
+
+// Search is a separate paid capability; connecting a model key never enables it.
+func (r *Runtime) SetProviderSearch(ctx context.Context, principal c.Principal, id string, enabled bool) (c.ProviderSettings, error) {
+	if principal.ID == "" {
+		return c.ProviderSettings{}, ErrForbidden
+	}
+	if id != "deepseek" {
+		return c.ProviderSettings{}, errors.New("web search is supported only through DeepSeek")
+	}
+	service, err := r.credentials()
+	if err != nil {
+		return c.ProviderSettings{}, err
+	}
+	if _, err = service.definition(id); err != nil {
+		return c.ProviderSettings{}, err
+	}
+	lock := service.credentialLock(principal.ID, id)
+	lock.Lock()
+	defer lock.Unlock()
+	saved, err := service.load(ctx, principal.ID, id)
+	if err != nil || !saved.Settings.Connected || len(saved.Ciphertext) == 0 {
+		return c.ProviderSettings{}, errors.New("connect your DeepSeek API key before enabling web search")
+	}
+	saved.Settings.SearchEnabled = enabled
+	saved.Revision = newID()
+	raw, err := json.Marshal(saved)
+	if err != nil {
+		return c.ProviderSettings{}, err
+	}
+	if err = service.store.SetSetting(ctx, principal.ID, "credential."+id, string(raw)); err != nil {
+		return c.ProviderSettings{}, err
+	}
+	r.cancelOwnerRuns(principal.ID)
+	return saved.Settings, nil
 }

@@ -9,9 +9,9 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "scripts/go build -trimpath -o dist/tamizhi-api ./apps/tamizhi-api"
+        "command": "scripts/go build -trimpath -o dist/tamizhi ./apps/tamizhi-api"
       },
-      "outputs": ["{workspaceRoot}/dist/tamizhi-api"],
+      "outputs": ["{workspaceRoot}/dist/tamizhi"],
       "inputs": ["production", "^production", "goGlobals"]
     },
     "test": {
@@ -32,7 +32,7 @@
       "executor": "nx:run-commands",
       "continuous": true,
       "options": {
-        "command": "scripts/go run ./apps/tamizhi-api"
+        "command": "scripts/go run ./apps/tamizhi-api serve"
       }
     }
   }

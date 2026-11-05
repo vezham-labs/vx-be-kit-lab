@@ -1,6 +1,49 @@
 // vx-bot/NOTE: Generated from Go contracts. Run the backend contracts:generate target.
 export type PermissionMode = 'ask' | 'safe' | 'full'
 
+export interface CompanionConnection {
+  requestId: string
+  code: string
+  expiresAt: string
+}
+
+export interface CompanionConnectionRequest {
+  requestId: string
+}
+
+export interface CompanionConnectionResult {
+  status: string
+  session?: CompanionSession
+}
+
+export interface CompanionSession {
+  token: string
+  expiresAt: string
+}
+
+export interface WebDocument {
+  pageId?: string
+  url?: string
+  title?: string
+  content?: string
+  headings?: Array<string>
+  sources?: Array<WebSource>
+  retrievedAt?: string
+}
+
+export interface WebSearchResult {
+  sources: Array<WebSource>
+}
+
+export interface WebSource {
+  id: string
+  url: string
+  title: string
+  domain: string
+  retrievedAt: string
+  snippet?: string
+}
+
 export interface Task {
   label: string
   done: boolean
@@ -233,6 +276,7 @@ export interface APIError {
 }
 
 export interface ProviderSettings {
+  searchEnabled: boolean
   oauthAvailable: boolean
   authMethod?: string
   projectId?: string
@@ -246,6 +290,10 @@ export interface ProviderSettings {
 
 export interface ProviderKeyRequest {
   apiKey: string
+}
+
+export interface ProviderSearchRequest {
+  enabled: boolean
 }
 
 export interface ProviderOAuthRequest {

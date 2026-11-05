@@ -273,6 +273,60 @@ components:
       required:
       - name
       type: object
+    CompanionConnection:
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        expiresAt:
+          type: string
+        requestId:
+          type: string
+      required:
+      - requestId
+      - code
+      - expiresAt
+      type: object
+    CompanionConnectionRequest:
+      additionalProperties: false
+      properties:
+        requestId:
+          type: string
+      required:
+      - requestId
+      type: object
+    CompanionConnectionResult:
+      additionalProperties: false
+      properties:
+        session:
+          additionalProperties: false
+          properties:
+            expiresAt:
+              type: string
+            token:
+              type: string
+          required:
+          - token
+          - expiresAt
+          type:
+          - "null"
+          - object
+        status:
+          type: string
+      required:
+      - status
+      type: object
+    CompanionSession:
+      additionalProperties: false
+      properties:
+        expiresAt:
+          type: string
+        token:
+          type: string
+      required:
+      - token
+      - expiresAt
+      type: object
     Conversation:
       additionalProperties: false
       properties:
@@ -749,6 +803,14 @@ components:
       - projectId
       - returnTo
       type: object
+    ProviderSearchRequest:
+      additionalProperties: false
+      properties:
+        enabled:
+          type: boolean
+      required:
+      - enabled
+      type: object
     ProviderSettings:
       additionalProperties: false
       properties:
@@ -792,11 +854,14 @@ components:
           type: boolean
         projectId:
           type: string
+        searchEnabled:
+          type: boolean
         speechModel:
           type: string
         transcriptionModel:
           type: string
       required:
+      - searchEnabled
       - oauthAvailable
       - id
       - name
@@ -1130,6 +1195,106 @@ components:
       - outputTokens
       - totalTokens
       type: object
+    WebDocument:
+      additionalProperties: false
+      properties:
+        content:
+          type: string
+        headings:
+          items:
+            type: string
+          type:
+          - "null"
+          - array
+        pageId:
+          type: string
+        retrievedAt:
+          type: string
+        sources:
+          items:
+            additionalProperties: false
+            properties:
+              domain:
+                type: string
+              id:
+                type: string
+              retrievedAt:
+                type: string
+              snippet:
+                type: string
+              title:
+                type: string
+              url:
+                type: string
+            required:
+            - id
+            - url
+            - title
+            - domain
+            - retrievedAt
+            type: object
+          type:
+          - "null"
+          - array
+        title:
+          type: string
+        url:
+          type: string
+      type: object
+    WebSearchResult:
+      additionalProperties: false
+      properties:
+        sources:
+          items:
+            additionalProperties: false
+            properties:
+              domain:
+                type: string
+              id:
+                type: string
+              retrievedAt:
+                type: string
+              snippet:
+                type: string
+              title:
+                type: string
+              url:
+                type: string
+            required:
+            - id
+            - url
+            - title
+            - domain
+            - retrievedAt
+            type: object
+          type:
+          - "null"
+          - array
+      required:
+      - sources
+      type: object
+    WebSource:
+      additionalProperties: false
+      properties:
+        domain:
+          type: string
+        id:
+          type: string
+        retrievedAt:
+          type: string
+        snippet:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+      required:
+      - id
+      - url
+      - title
+      - domain
+      - retrievedAt
+      type: object
   securitySchemes:
     bearer:
       scheme: bearer
@@ -1239,6 +1404,62 @@ paths:
           description: Access denied
         "409":
           description: Concurrent update conflict
+  /auth/connect:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanionConnection'
+          description: Successful response
+        "401":
+          description: Sign in required
+        "403":
+          description: Access denied
+        "409":
+          description: Concurrent update conflict
+      security: []
+  /auth/connect/cancel:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanionConnectionRequest'
+        required: true
+      responses:
+        "204":
+          description: Connection request cancelled
+        "401":
+          description: Sign in required
+        "403":
+          description: Access denied
+        "409":
+          description: Concurrent update conflict
+      security: []
+  /auth/connect/poll:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanionConnectionRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanionConnectionResult'
+          description: Successful response
+        "401":
+          description: Sign in required
+        "403":
+          description: Access denied
+        "409":
+          description: Concurrent update conflict
+      security: []
   /auth/session:
     get:
       responses:
@@ -1701,6 +1922,33 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ProviderKeyRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderSettings'
+          description: Successful response
+        "401":
+          description: Sign in required
+        "403":
+          description: Access denied
+        "409":
+          description: Concurrent update conflict
+  /providers/{id}/search:
+    put:
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderSearchRequest'
         required: true
       responses:
         "200":

@@ -45,6 +45,17 @@
           "TAMIZHI_BROWSER_FIXTURE": "1"
         }
       }
+    },
+    "companion-fixture": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "cache": false,
+      "options": {
+        "command": "scripts/go test -run TestCompanionFixtureServer -count=1 -timeout=15m ./packages/tamizhi/core/...",
+        "env": {
+          "TAMIZHI_COMPANION_FIXTURE": "1"
+        }
+      }
     }
   }
 }

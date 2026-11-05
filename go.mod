@@ -13,6 +13,7 @@ require (
 	github.com/openai/openai-go/v3 v3.91.1
 	github.com/tr1v3r/cordis-go v0.0.0-20260918055155-a06db444a184
 	go.yaml.in/yaml/v4 v4.0.0-rc.2
+	golang.org/x/net v0.60.0
 	golang.org/x/oauth2 v0.37.0
 	google.golang.org/genai v1.77.0
 	modernc.org/sqlite v1.61.1
@@ -57,7 +58,6 @@ require (
 	go.opentelemetry.io/otel/metric v1.33.0 // indirect
 	go.opentelemetry.io/otel/trace v1.33.0 // indirect
 	golang.org/x/crypto v0.57.0 // indirect
-	golang.org/x/net v0.60.0 // indirect
 	golang.org/x/sync v0.24.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
